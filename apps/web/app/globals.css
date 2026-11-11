@@ -1,0 +1,42 @@
+@import "tailwindcss";
+@import "@fontsource-variable/bricolage-grotesque/standard.css";
+
+/* Tokens. See DESIGN_SYSTEM.md: the room is a maquette on a cutting mat. */
+@theme {
+  --color-mat: #1e4d43;
+  --color-mat-deep: #143830;
+  --color-mat-line: #7fb3a3;
+  --color-board: #f3f5f4;
+  --color-board-edge: #cfd6d3;
+  --color-ink: #12211d;
+  --color-ink-soft: #4d5f5a;
+  --color-tape: #f2c230;
+  --font-sans: "Bricolage Grotesque Variable", ui-sans-serif, system-ui, sans-serif;
+  --shadow-cut: 3px 3px 0 0 rgb(18 33 29 / 0.55);
+  --radius-board: 3px;
+}
+
+html, body { height: 100%; }
+body {
+  background: var(--color-mat-deep);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-variation-settings: "opsz" 14, "wdth" 96;
+  overscroll-behavior: none;
+  -webkit-font-smoothing: antialiased;
+}
+.figures { font-variant-numeric: tabular-nums lining-nums; }
+.display { font-variation-settings: "opsz" 60, "wdth" 82; letter-spacing: -0.02em; }
+
+.board {
+  background: var(--color-board);
+  border: 1px solid var(--color-ink);
+  border-radius: var(--radius-board);
+  box-shadow: var(--shadow-cut);
+}
+:focus-visible { outline: 2px solid var(--color-tape); outline-offset: 2px; }
+.board :focus-visible { outline-color: var(--color-ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
