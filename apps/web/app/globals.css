@@ -34,8 +34,12 @@ body {
   border-radius: var(--radius-board);
   box-shadow: var(--shadow-cut);
 }
+.board-tape { background: var(--color-tape); }
+.board-tape:hover { background: #ffd95a; }
 :focus-visible { outline: 2px solid var(--color-tape); outline-offset: 2px; }
-.board :focus-visible { outline-color: var(--color-ink); }
+.board .board-tape { background: var(--color-tape); }
+.board-tape:hover { background: #ffd95a; }
+:focus-visible { outline-color: var(--color-ink); }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }

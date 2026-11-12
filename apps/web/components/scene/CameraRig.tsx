@@ -66,17 +66,20 @@ export function CameraRig() {
   const view = useStudio((s) => s.view);
   const dragging = useStudio((s) => s.dragging);
   const { camera, size } = useThree();
+  // Frame the room whatever its size: the tuned positions below were set for a 5.6 m room.
+  const span = useStudio((s) => (s.room ? Math.max(s.room.envelope.width_m, s.room.envelope.depth_m, 2) : 5.6));
+  const f = span / 5.6;
 
   useEffect(() => {
     const cam = camera as THREE.PerspectiveCamera;
     const portrait = size.height > size.width;
-    if (view === "orbit") { cam.fov = 42; cam.position.set(...(portrait ? [8.6, 10.2, 11] : [5.2, 6.2, 6.6]) as [number, number, number]); }
-    if (view === "plan") { cam.fov = 28; cam.position.set(0, portrait ? 27 : 13.5, 0.001); }
+    if (view === "orbit") { cam.fov = 42; cam.position.set(...((portrait ? [8.6, 10.2, 11] : [5.2, 6.2, 6.6]).map((n) => n * f)) as [number, number, number]); }
+    if (view === "plan") { cam.fov = 28; cam.position.set(0, (portrait ? 27 : 13.5) * f, 0.001); }
     if (view === "walk") cam.fov = 68;
     cam.updateProjectionMatrix();
     // Framing is intentionally reset only when the mode changes, not on every resize.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [view, camera]);
+  }, [view, camera, f]);
 
   if (view === "walk") return <Walk />;
   return (
@@ -87,7 +90,7 @@ export function CameraRig() {
       target={[0, view === "plan" ? 0 : 0.9, 0]}
       enableRotate={view === "orbit"}
       enableDamping dampingFactor={0.12}
-      minDistance={1.5} maxDistance={30}
+      minDistance={1} maxDistance={30 * Math.max(1, f)}
       maxPolarAngle={view === "orbit" ? Math.PI / 2 - 0.02 : 0}
       mouseButtons={view === "plan" ? { LEFT: THREE.MOUSE.PAN, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.PAN } : undefined}
       touches={view === "plan" ? { ONE: THREE.TOUCH.PAN, TWO: THREE.TOUCH.DOLLY_PAN } : undefined}

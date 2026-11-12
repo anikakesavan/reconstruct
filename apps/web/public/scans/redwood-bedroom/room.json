@@ -1,24 +1,24 @@
 {
   "source": {
-    "dataset": "Redwood Indoor Lidar-RGBD Scan Dataset, scene \"Bedroom\"",
-    "citation": "Park, Zhou, Koltun. Colored Point Cloud Registration Revisited. ICCV 2017.",
+    "kind": "dataset",
+    "title": "Bedroom, Redwood scan",
+    "detail": "Redwood Indoor Lidar-RGBD Scan Dataset, scene \"Bedroom\". Park, Zhou, Koltun. Colored Point Cloud Registration Revisited. ICCV 2017.",
     "license": "Public domain (attribution requested)",
-    "url": "http://redwood-data.org/indoor_lidar_rgbd/",
-    "sensor": "RGB-D sequence (metric depth)"
+    "url": "http://redwood-data.org/indoor_lidar_rgbd/"
   },
   "units": "metres",
   "up": "Y",
   "processing": {
     "removed_speck_faces": 60264,
     "camera_height_m_mean": 1.3888159060556193,
-    "original_faces": 10190866,
     "target_faces": 450000,
     "faces": 389735,
     "vertices": 200702,
     "colour_transfer_residual": {
       "median_m": 0.00864311721238556,
       "p95_m": 0.03271607801507799
-    }
+    },
+    "faces_before_reduction": 10190866
   },
   "envelope": {
     "confidence": "estimated",
@@ -37,7 +37,7 @@
     },
     "width_m": 5.588215750075127,
     "depth_m": 4.688980182709338,
-    "dataset_stated_floor_area_m2": 21.01
+    "stated_floor_area_m2": 21.01
   },
   "bounds": {
     "min": [
@@ -50,5 +50,11 @@
       3.8119252439102658,
       2.376751621227428
     ]
+  },
+  "scale": {
+    "confidence": "measured",
+    "method": "Depth sensor",
+    "metres_per_unit": 1.0,
+    "disagreement_between_views": null
   }
 }

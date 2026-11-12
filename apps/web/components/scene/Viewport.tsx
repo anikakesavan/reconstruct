@@ -23,6 +23,7 @@ function Stats() {
 
 export default function Viewport() {
   const view = useStudio((s) => s.view);
+  const scan = useStudio((s) => s.scan);
   return (
     <Canvas
       camera={{ position: [5.2, 6.2, 6.6], fov: 42, near: 0.05, far: 80 }}
@@ -41,7 +42,7 @@ export default function Viewport() {
         />
       )}
       <Suspense fallback={null}>
-        <ScanMesh />
+        <ScanMesh key={scan.id} url={scan.glbUrl} />
       </Suspense>
       <Volumes />
       <Annotations />

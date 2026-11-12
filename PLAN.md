@@ -15,7 +15,7 @@ Legend: done, partly done, not started. Update this file at the end of every ses
 - [x] Block-out volumes: add, select in 3D, drag, snap, resize, turn, remove, wall limits
 - [x] Estimated / stated marks on dimensions
 - [x] Desktop and mobile layouts, browser-tested (LIMITATIONS.md, "Test record")
-- [ ] Selecting scanned furniture (needs segmentation; Phase 5)
+- [ ] Selecting scanned furniture (needs segmentation; later in Phase 5)
 - [ ] Frame rate measured on real GPUs (only a software renderer was available)
 - [ ] Touch drag of volumes verified on a physical phone
 
@@ -33,8 +33,18 @@ Legend: done, partly done, not started. Update this file at the end of every ses
 Model receives the room envelope + object list, returns operations in the Phase 3 operation schema,
 validated before applying, shown as a reviewable diff, undoable one by one.
 
-## Phase 5: real photo / video reconstruction
-See ARCHITECTURE.md. Includes user scale calibration, wall / door / window detection, furniture segmentation.
+## Phase 5: real photo / video reconstruction (first slice done, pulled ahead of Phases 3 and 4)
+- [x] Upload photos (JPEG, PNG, WebP, HEIC) and video (MP4, MOV, WebM) from the app
+- [x] Pipeline: frame selection, Depth Anything 3 depth and poses, TSDF fusion, room fit
+- [x] Job progress in the UI, list / open / delete scans, originals deleted after processing
+- [x] Learned scale estimate, plus user calibration from one real measurement
+- [x] End-to-end browser test with real room photos and a real room video (tests/upload.py)
+- [ ] Test with a phone-shot video of normal length (only an 8-frame sample video was available)
+- [ ] More than 16 views (chunk the model, align chunks)
+- [ ] Higher-resolution depth for sharper surfaces; textures instead of vertex colours
+- [ ] Wall / door / window detection; furniture segmentation so scanned objects can be selected
+- [ ] Hole filling for unseen areas, clearly marked as synthetic
+- [ ] Hosted deployment: GPU worker, object storage, per-user privacy rules
 
 ## Phase 6: moodboards, budget, shopping list
 ## Phase 7: before / after slider, exports, Design Battle with explicit publishing

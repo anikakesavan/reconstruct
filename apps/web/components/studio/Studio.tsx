@@ -9,6 +9,7 @@ import { ToolRail } from "./ToolRail";
 import { RoomSheet } from "./RoomSheet";
 import { Inspector } from "./Inspector";
 import { WalkPad } from "./WalkPad";
+import { UploadDialog } from "./UploadDialog";
 
 const Viewport = dynamic(() => import("@/components/scene/Viewport"), { ssr: false });
 
@@ -42,11 +43,11 @@ function Loading() {
   return (
     <div className="pointer-events-none absolute inset-0 grid place-items-center" role="status">
       <div className="board px-4 py-3">
-        <p className="text-[15px] font-medium">Loading the bedroom scan</p>
+        <p className="text-[15px] font-medium">Loading the scan</p>
         <div className="mt-2 h-1.5 w-56 border border-ink bg-white">
           <div className="h-full bg-tape transition-[width]" style={{ width: `${Math.max(4, progress)}%` }} />
         </div>
-        <p className="figures mt-1.5 text-[12px] text-ink-soft">{Math.round(progress)}% of about 10 MB</p>
+        <p className="figures mt-1.5 text-[12px] text-ink-soft">{Math.round(progress)}%</p>
       </div>
     </div>
   );
@@ -68,25 +69,33 @@ export function Studio() {
   const view = useStudio((s) => s.view);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [failed, setFailed] = useState(false);
+  const [uploadOpen, setUploadOpen] = useState(false);
 
+  const scan = useStudio((s) => s.scan);
   useEffect(() => {
     if (window.matchMedia("(min-width: 1024px)").matches) setSheetOpen(true);
-    fetch("/scans/redwood-bedroom/room.json")
+  }, []);
+  useEffect(() => {
+    let stale = false;
+    setFailed(false);
+    fetch(scan.roomUrl)
       .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-      .then((r: RoomMeta) => setRoom(r))
-      .catch(() => setFailed(true));
-  }, [setRoom]);
+      .then((r: RoomMeta) => { if (!stale) setRoom(r); })
+      .catch(() => { if (!stale) setFailed(true); });
+    return () => { stale = true; };
+  }, [scan, setRoom]);
 
   return (
     <main className="fixed inset-0 select-none overflow-hidden bg-mat">
       <div className="absolute inset-0"><Viewport /></div>
       <Loading />
-      <TopBar sheetOpen={sheetOpen} onToggleSheet={() => setSheetOpen((o) => !o)} />
+      <TopBar sheetOpen={sheetOpen} onToggleSheet={() => setSheetOpen((o) => !o)} onScan={() => setUploadOpen(true)} />
       <RoomSheet open={sheetOpen} onClose={() => setSheetOpen(false)} />
       <Inspector />
       {view === "walk" && <WalkPad />}
       <ToolRail />
       <StatusLine />
+      <UploadDialog open={uploadOpen} onClose={() => setUploadOpen(false)} />
       {failed && (
         <p className="board absolute left-1/2 top-20 -translate-x-1/2 px-3 py-2 text-[14px]" role="alert">
           Room details did not load. Reload the page; the 3D scan may still appear without dimensions.

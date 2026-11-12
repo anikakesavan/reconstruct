@@ -1,6 +1,6 @@
 # Architecture
 
-Last updated at the end of Phase 2.
+Last updated after the first slice of Phase 5 (upload and reconstruct).
 
 ```
 reconstruct/
@@ -15,12 +15,20 @@ reconstruct/
 │  ├─ components/studio/          DOM chrome around the viewport
 │  │  ├─ Studio.tsx               shell, keyboard shortcuts, loading and error states
 │  │  ├─ TopBar, ToolRail, RoomSheet, Inspector, WalkPad
-│  ├─ lib/store.ts                single Zustand store: tools, view, volumes, measurements
+│  │  └─ UploadDialog.tsx         pick files, upload, live stages, list / open / delete scans
+│  ├─ lib/store.ts                single Zustand store: current scan, calibration, tools, volumes
+│  ├─ lib/api.ts                  client for the reconstruction service
 │  ├─ lib/types.ts                RoomMeta, Volume, Confidence ("measured" | "estimated")
 │  └─ public/scans/<id>/          scan.glb + room.json for each prepared scan
 ├─ services/reconstruction/       Python
-│  ├─ app/main.py                 FastAPI: /health, /scans/{id}; /reconstructions returns 501
-│  └─ scripts/prepare_demo_scan.py  offline: raw scan -> web-ready GLB + room.json
+│  ├─ app/main.py                 FastAPI: upload, status, assets, delete (see file header)
+│  ├─ app/jobs.py                 one-at-a-time job queue; each job is a folder under data/jobs/
+│  ├─ app/pipeline.py             the five stages below
+│  ├─ app/frames.py               EXIF rotation, HEIC, sharpest-frame sampling from video
+│  ├─ app/fuse.py                 NumPy TSDF fusion + marching cubes
+│  ├─ app/roomfit.py              gravity, wall direction, floor and wall planes
+│  ├─ scripts/setup.sh            installs packages, clones Depth Anything 3 at a pinned commit
+│  └─ scripts/prepare_demo_scan.py  offline: raw Redwood scan -> web-ready GLB + room.json
 └─ tests/smoke.py                 Playwright script that drives the real UI and saves screenshots
 ```
 
@@ -64,19 +72,40 @@ desktop and touch, and never traps the cursor.
 **State is client-only for now.** Persistence (Supabase / Postgres, object storage) arrives with
 saved layouts in Phase 3. Nothing is stored or uploaded today.
 
-## Planned reconstruction pipeline (Phase 5, not built)
+## Reconstruction pipeline (built)
 
-Researched options, with the trade-off that matters for this product:
+```
+photos / video ──► frames.py ──► Depth Anything 3 Base ──► scale ──► fuse.py ──► roomfit.py ──► scan.glb
+                  rotate, resize,   one forward pass:        metric     TSDF on a     gravity, wall      room.json
+                  pick sharp        depth + confidence +     depth      room-sized    direction, floor
+                  video frames      intrinsics + camera      model      voxel grid    and wall planes
+                  (max 16 views)    poses for all views      guess
+```
 
-| Approach | Gives | Problem for us |
+Why this design:
+
+- **Feed-forward geometry instead of COLMAP.** People take a handful of photos with little overlap and
+  lots of blank wall, which is where feature matching fails. Depth Anything 3 predicts depth and poses
+  for all views in one pass. The Base model is Apache 2.0 and small enough for a laptop CPU.
+- **A surface, not a splat.** The editor needs something to measure, click and collide with, so views
+  are fused into one mesh. Unobserved space is masked, so nothing is invented where no camera looked.
+- **Scale is never assumed to be right.** Photos alone have no absolute size. A metric depth model
+  (DA3 Metric Large, Apache 2.0) gives a first guess, marked `estimated`. The user fixes it by
+  calibrating one measured line; the factor is stored per scan in the browser and applied to the mesh
+  and every dimension, which then read `measured`.
+- **Privacy.** Everything runs on the user's machine. Uploaded originals and extracted frames are
+  deleted when the job ends; only the mesh and its metadata are kept, and a scan can be deleted from the app.
+- **Jobs are folders** (`data/jobs/<id>/job.json`, `scan.glb`, `room.json`). No database yet; the
+  web app polls `GET /reconstructions/{id}`. A restart marks unfinished jobs as failed.
+
+Alternatives considered:
+
+| Approach | Gives | Why not (yet) |
 |---|---|---|
-| COLMAP (SfM + MVS) | Reliable, consistent geometry | Slow; struggles on blank walls; no metric scale from photos alone |
-| Feed-forward models (DUSt3R, MASt3R, VGGT) | Fast dense point maps from uncalibrated images | Larger geometric residuals; GPU memory limits frame count; no metric scale |
-| Gaussian splatting | Best-looking novel views | Not a surface: hard to measure, collide with, or edit |
-| Phone depth sensors (ARKit / RoomPlan style capture) | Metric scale, wall/door/window primitives | iOS Pro devices only; needs a native capture step |
+| COLMAP (SfM + MVS) | Consistent geometry from dense overlap | Fails on sparse photos and blank walls; dense stage needs CUDA |
+| Larger feed-forward models (DA3 Large / Giant, VGGT, MASt3R) | Better geometry | Non-commercial licences and GPU-sized memory; swappable through `RECONSTRUCT_GEOMETRY_MODEL` |
+| Gaussian splatting | Best-looking views | Not a surface: hard to measure or edit |
+| Phone depth sensors (ARKit / RoomPlan) | True metric scale, wall and door primitives | Needs a native iOS capture app |
 
-Intended design: feed-forward model for poses and dense points → TSDF fusion to a mesh → the same
-`prepare` stage used here (orientation, envelope fit) → plane and opening detection → semantic
-segmentation for furniture. Scale from photos alone is ambiguous, so the user will calibrate by
-entering one real measurement (for example a door width); until they do, all dimensions stay "estimated".
-Runs on a GPU worker behind FastAPI with a job queue; the web app polls job status.
+Still to build in Phase 5: wall, door and window primitives, furniture segmentation, more than 16
+views (chunked inference), and a GPU worker for hosted use.

@@ -119,15 +119,15 @@ def planes(axis):
 x0, x1 = planes(0); z0, z1 = planes(2)
 room = {
     'source': {
-        'dataset': 'Redwood Indoor Lidar-RGBD Scan Dataset, scene "Bedroom"',
-        'citation': 'Park, Zhou, Koltun. Colored Point Cloud Registration Revisited. ICCV 2017.',
+        'kind': 'dataset', 'title': 'Bedroom, Redwood scan',
+        'detail': 'Redwood Indoor Lidar-RGBD Scan Dataset, scene "Bedroom". Park, Zhou, Koltun. Colored Point Cloud Registration Revisited. ICCV 2017.',
         'license': 'Public domain (attribution requested)',
         'url': 'http://redwood-data.org/indoor_lidar_rgbd/',
-        'sensor': 'RGB-D sequence (metric depth)',
     },
+    'scale': {'confidence': 'measured', 'method': 'Depth sensor', 'metres_per_unit': 1.0, 'disagreement_between_views': None},
     'units': 'metres', 'up': 'Y',
     'processing': {'removed_speck_faces': removed_faces, 'camera_height_m_mean': cam_h - floor_h,
-                   'original_faces': int(len(F)), 'target_faces': TARGET_FACES, 'faces': int(len(F2)), 'vertices': int(len(V2)),
+                   'faces_before_reduction': int(len(F)), 'target_faces': TARGET_FACES, 'faces': int(len(F2)), 'vertices': int(len(V2)),
                    'colour_transfer_residual': color_residual},
     'envelope': {
         'confidence': 'estimated',
@@ -138,7 +138,7 @@ room = {
                     'max_y': float(np.percentile(mesh.vertices[:, 1], 99.5))},
         'walls': {'x_min': x0, 'x_max': x1, 'z_min': z0, 'z_max': z1},
         'width_m': x1 - x0, 'depth_m': z1 - z0,
-        'dataset_stated_floor_area_m2': 21.01,
+        'stated_floor_area_m2': 21.01,
     },
     'bounds': {'min': mesh.bounds[0].tolist(), 'max': mesh.bounds[1].tolist()},
 }

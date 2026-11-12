@@ -45,6 +45,9 @@ function VolumePanel({ id }: { id: string }) {
 function MeasurePanel() {
   const { a, b } = useStudio((s) => s.measure);
   const clear = useStudio((s) => s.clearMeasure);
+  const calibrate = useStudio((s) => s.calibrate);
+  const scale = useStudio((s) => s.room?.scale.confidence);
+  const uploaded = useStudio((s) => s.scan.kind === "upload");
   return (
     <>
       <h2 className="display text-[22px] font-bold leading-tight">Measure</h2>
@@ -55,8 +58,30 @@ function MeasurePanel() {
             {metres(Math.hypot(a[0] - b[0], a[2] - b[2]))} along the floor, {metres(Math.abs(a[1] - b[1]))} in height.
           </p>
           <p className="mt-2 text-[12px] leading-[1.45] text-ink-soft">
-            Read from the scan surface. Expect a few centimetres of error; check with a tape before buying to fit.
+            {scale === "measured"
+              ? "Read from the scan surface. Expect a few centimetres of error; check with a tape before buying to fit."
+              : "This scan's size is a guess, so this number is too. Calibrate below to fix every length at once."}
           </p>
+          {uploaded && (
+            <form
+              className="mt-3 border-t border-board-edge pt-3"
+              onSubmit={(e) => {
+                e.preventDefault();
+                const real = Number(new FormData(e.currentTarget).get("real"));
+                if (real > 0) calibrate(real / distance(a, b));
+              }}
+            >
+              <label className="text-[13px] font-medium">
+                True length of this line, in metres
+                <span className="mt-1 flex gap-2">
+                  <input name="real" type="number" inputMode="decimal" min={0.05} max={50} step={0.001} required placeholder="e.g. 0.76"
+                    className="figures h-10 w-full min-w-0 select-text rounded-[2px] border border-ink bg-white px-2 text-[15px] font-semibold" />
+                  <button className={`${btn} shrink-0 bg-tape`}>Set scale</button>
+                </span>
+              </label>
+              <p className="mt-1 text-[12px] leading-[1.45] text-ink-soft">Resizes the whole room to match. Boxes you added are cleared.</p>
+            </form>
+          )}
           <button className={`${btn} mt-3`} onClick={clear}>Clear</button>
         </>
       ) : (

@@ -7,7 +7,6 @@ import { MeshBVH, acceleratedRaycast } from "three-mesh-bvh";
 import { useStudio } from "@/lib/store";
 import type { Probe } from "@/lib/types";
 
-export const SCAN_URL = "/scans/redwood-bedroom/scan.glb";
 
 function classify(normalY: number): Probe["surface"] {
   if (normalY > 0.9) return "floor";
@@ -20,8 +19,9 @@ function classify(normalY: number): Probe["surface"] {
  * The captured room. Rendered unlit with its captured vertex colours: the scan's
  * appearance already contains the real lighting, so relighting it would be a lie.
  */
-export function ScanMesh() {
-  const gltf = useGLTF(SCAN_URL);
+export function ScanMesh({ url }: { url: string }) {
+  const gltf = useGLTF(url);
+  const calibration = useStudio((s) => s.calibration);
   const setScanReady = useStudio((s) => s.setScanReady);
 
   const mesh = useMemo(() => {
@@ -64,6 +64,5 @@ export function ScanMesh() {
     } else if (tool === "select") select(null);
   };
 
-  return <primitive object={mesh} onClick={onClick} />;
+  return <primitive object={mesh} scale={calibration} onClick={onClick} />;
 }
-useGLTF.preload(SCAN_URL);

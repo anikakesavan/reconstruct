@@ -1,2 +1,28 @@
+# Service
 fastapi>=0.115
 uvicorn[standard]>=0.30
+python-multipart
+# Pipeline
+numpy
+scipy
+scikit-image
+opencv-python-headless
+pillow
+pillow-heif
+trimesh
+fast-simplification
+# Depth Anything 3 runtime (the model code itself is cloned by scripts/setup.sh)
+torch>=2
+torchvision
+einops
+omegaconf
+safetensors
+huggingface_hub
+imageio
+plyfile
+e3nn
+typer
+addict
+evo
+moviepy==1.0.3
+pycolmap

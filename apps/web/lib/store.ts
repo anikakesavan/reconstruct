@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import type { Probe, RoomMeta, Tool, Vec3, ViewMode, Volume } from "./types";
+import type { Probe, RoomMeta, ScanRef, Tool, Vec3, ViewMode, Volume } from "./types";
+import { DEMO_SCAN } from "./api";
 
 export const VOLUME_PRESETS: { label: string; size: Vec3 }[] = [
   { label: "Double bed", size: [1.4, 0.5, 2.0] },
@@ -9,7 +10,15 @@ export const VOLUME_PRESETS: { label: string; size: Vec3 }[] = [
 ];
 
 interface Studio {
+  scan: ScanRef;
+  /** Room details as delivered with the scan, before any user calibration. */
+  baseRoom: RoomMeta | null;
+  /** Multiplier the user set by calibrating against a real measurement. 1 means untouched. */
+  calibration: number;
+  /** Room details with calibration applied. This is what the interface shows. */
   room: RoomMeta | null;
+  openScan: (scan: ScanRef) => void;
+  calibrate: (factor: number) => void;
   scanReady: boolean;
   tool: Tool;
   view: ViewMode;
@@ -53,13 +62,47 @@ export function clampToRoom(v: Volume, room: RoomMeta | null): Volume {
   return { ...v, x: cl(v.x, w.x_min + hx, w.x_max - hx), z: cl(v.z, w.z_min + hz, w.z_max - hz) };
 }
 
+/** Apply a user calibration to every length in the room details. */
+export function scaleRoom(r: RoomMeta, k: number): RoomMeta {
+  if (k === 1) return r;
+  const w = r.envelope.walls;
+  return {
+    ...r,
+    scale: { ...r.scale, confidence: "measured", method: "Calibrated by you against a real measurement", metres_per_unit: r.scale.metres_per_unit * k },
+    envelope: {
+      ...r.envelope, width_m: r.envelope.width_m * k, depth_m: r.envelope.depth_m * k,
+      ceiling: { ...r.envelope.ceiling, max_y: r.envelope.ceiling.max_y * k },
+      walls: { x_min: w.x_min * k, x_max: w.x_max * k, z_min: w.z_min * k, z_max: w.z_max * k },
+      stated_floor_area_m2: undefined,
+    },
+    bounds: { min: r.bounds.min.map((n) => n * k) as Vec3, max: r.bounds.max.map((n) => n * k) as Vec3 },
+  };
+}
+
 let counter = 0;
 
 export const useStudio = create<Studio>((set, get) => ({
   room: null, scanReady: false, tool: "select", view: "orbit", volumes: [], selectedId: null,
   measure: { a: null, b: null }, probe: null, fps: 0, triangles: 0, dragging: false, gain: 1.5,
   setGain: (gain) => set({ gain }),
-  setRoom: (room) => set({ room }),
+  scan: DEMO_SCAN, baseRoom: null, calibration: 1,
+  openScan: (scan) => {
+    if (scan.id === get().scan.id) return;
+    set({ scan, baseRoom: null, room: null, calibration: 1, scanReady: false, volumes: [], selectedId: null,
+          measure: { a: null, b: null }, probe: null, tool: "select", view: "orbit", gain: scan.kind === "dataset" ? 1.5 : 1 });
+  },
+  setRoom: (baseRoom) => {
+    let k = 1;
+    try { k = Number(localStorage.getItem(`reconstruct:calibration:${get().scan.id}`)) || 1; } catch { /* storage unavailable */ }
+    set({ baseRoom, calibration: k, room: scaleRoom(baseRoom, k) });
+  },
+  calibrate: (factor) => {
+    const { baseRoom, calibration, scan } = get();
+    if (!baseRoom || !(factor > 0)) return;
+    const k = calibration * factor;
+    try { localStorage.setItem(`reconstruct:calibration:${scan.id}`, String(k)); } catch { /* storage unavailable */ }
+    set({ calibration: k, room: scaleRoom(baseRoom, k), measure: { a: null, b: null }, probe: null, volumes: [], selectedId: null });
+  },
   setScanReady: () => set({ scanReady: true }),
   setTool: (tool) => set({ tool, probe: tool === "inspect" ? get().probe : null }),
   setView: (view) => set({ view }),
