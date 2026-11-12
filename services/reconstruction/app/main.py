@@ -18,7 +18,7 @@ from .frames import IMAGE_EXT, VIDEO_EXT
 
 MAX_FILES = 80
 MAX_BYTES = int(os.environ.get("RECONSTRUCT_MAX_UPLOAD_MB", "600")) * 1024 * 1024
-ORIGINS = os.environ.get("RECONSTRUCT_ALLOWED_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000").split(",")
+ORIGINS = os.environ.get("RECONSTRUCT_ALLOWED_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000,https://anikakesavan.github.io").split(",")
 
 
 @asynccontextmanager

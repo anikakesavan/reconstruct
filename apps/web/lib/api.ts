@@ -3,9 +3,11 @@ import type { Job, ScanRef } from "./types";
 /** Where the Python reconstruction service runs. Override with NEXT_PUBLIC_RECONSTRUCT_API. */
 export const API = (process.env.NEXT_PUBLIC_RECONSTRUCT_API ?? "http://localhost:8000").replace(/\/$/, "");
 
+const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
 export const DEMO_SCAN: ScanRef = {
   id: "redwood-bedroom", title: "Bedroom, Redwood scan", kind: "dataset",
-  glbUrl: "/scans/redwood-bedroom/scan.glb", roomUrl: "/scans/redwood-bedroom/room.json",
+  glbUrl: `${BASE}/scans/redwood-bedroom/scan.glb`, roomUrl: `${BASE}/scans/redwood-bedroom/room.json`,
 };
 
 export const scanFromJob = (job: Pick<Job, "id" | "title">): ScanRef => ({
