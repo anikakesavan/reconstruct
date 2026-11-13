@@ -1,0 +1,25 @@
+name: Deploy scan service to Modal
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["services/reconstruction/**"]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+      MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+    steps:
+      - name: Stop quietly when no Modal token has been added
+        id: gate
+        run: if [ -z "$MODAL_TOKEN_ID" ]; then echo "No MODAL_TOKEN_ID secret; skipping."; echo "go=no" >> "$GITHUB_OUTPUT"; else echo "go=yes" >> "$GITHUB_OUTPUT"; fi
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.go == 'yes'
+      - uses: actions/setup-python@v5
+        if: steps.gate.outputs.go == 'yes'
+        with:
+          python-version: "3.11"
+      - if: steps.gate.outputs.go == 'yes'
+        working-directory: services/reconstruction
+        run: pip install modal && modal deploy modal_app.py
