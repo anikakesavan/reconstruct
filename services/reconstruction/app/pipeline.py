@@ -21,6 +21,7 @@ from . import frames as frames_mod
 from .roomfit import orient_and_fit
 from .fuse import fuse
 from .quality import assess
+from .objects import detect, SEG_MODEL
 
 ROOT = Path(__file__).resolve().parents[1]
 _DA3_SRC = Path(os.environ.get("RECONSTRUCT_DA3_SRC", ROOT / "third_party" / "Depth-Anything-3" / "src"))
@@ -165,8 +166,14 @@ def reconstruct(upload_dir: Path, out_dir: Path, progress: Callable[[str, float,
 
     t1 = lap("fusion_s", t1)
     progress("room", 0.85, "Finding the floor and walls")
-    room_mesh, envelope, diag = orient_and_fit(V, F, C, np.mean(ups, axis=0), np.array(centres))
+    room_mesh, envelope, diag, to_room = orient_and_fit(V, F, C, np.mean(ups, axis=0), np.array(centres))
     room_mesh.export(out_dir / "scan.glb")
+    t1 = lap("room_s", t1)
+
+    progress("objects", 0.88, "Finding furniture, windows and doors")
+    found = detect(rgb, np.stack(metric), np.stack(masks), K, np.stack(w2cs), to_room, envelope,
+                   lambda f: progress("objects", 0.88 + 0.11 * f, "Finding furniture, windows and doors"))
+    t1 = lap("objects_s", t1)
 
     coverage = float(np.mean([m.mean() for m in masks]))
     quality = assess(got["stats"], n, coverage, np.array(centres), scale, envelope)
@@ -189,10 +196,33 @@ def reconstruct(upload_dir: Path, out_dir: Path, progress: Callable[[str, float,
         "bounds": {"min": room_mesh.bounds[0].tolist(), "max": room_mesh.bounds[1].tolist()},
     }
     (out_dir / "room.json").write_text(json.dumps(room, indent=2))
+
+    # what the editor opens: a room shell plus the furniture that was found, each with a confidence
+    ceiling = found["ceiling_y"]
+    height = ceiling if ceiling and 2.0 <= ceiling <= 3.8 else float(np.clip(envelope["ceiling"]["max_y"], 2.2, 3.2))
+    wf = envelope["walls_found"]
+    if not found["objects"]:
+        quality["issues"].append({"severity": "problem", "text": "No furniture could be located. Add views that show each piece from a couple of metres away."})
+        quality["level"] = "poor"
+    scene = {
+        "title": title, "scale": scale, "quality": {"level": quality["level"], "issues": quality["issues"]},
+        "processing": {"views": n, "seconds": round(time.time() - t0, 1), "device": _device(),
+                       "pipeline": f"{GEOMETRY_MODEL} depth and poses, {SEG_MODEL} segmentation"},
+        "room": {"width": round(float(np.clip(envelope["width_m"], 1.8, 12)), 2), "depth": round(float(np.clip(envelope["depth_m"], 1.8, 12)), 2),
+                 "height": round(height, 2), "height_confidence": 0.8 if ceiling else 0.3,
+                 "wall_color": found["wall_color"], "floor_color": found["floor_color"],
+                 "walls_found": {"back": wf["z_min"], "front": wf["z_max"], "left": wf["x_min"], "right": wf["x_max"]},
+                 "floor_found": envelope["floor_found"], "openings": found["openings"]},
+        "objects": found["objects"], "skipped": found["skipped"],
+    }
+    (out_dir / "scene.json").write_text(json.dumps(scene, indent=1))
+    room["scene"] = scene
     progress("done", 1.0, "Ready")
     return room
 
 
 if __name__ == "__main__":
     r = reconstruct(Path(sys.argv[1]), Path(sys.argv[2]), lambda st, p, msg: print(f"[{p:4.0%}] {st}: {msg}", flush=True))
-    print(json.dumps({k: r[k] for k in ("scale", "envelope")}, indent=1)); print(json.dumps({k: v for k, v in r["processing"].items() if k != "camera_positions"}, indent=1))
+    s = r["scene"]; print(json.dumps(s["room"], indent=1)); print("timing", r["processing"]["timing"])
+    for o in s["objects"]: print("OBJ", o)
+    for o in s["skipped"]: print("SKIP", o)

@@ -3,7 +3,6 @@ import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { useProgress } from "@react-three/drei";
 import { ROT_STEP, useStudio } from "@/lib/store";
-import type { ScanMeta } from "@/lib/types";
 import { TopBar } from "./TopBar";
 import { ToolBar } from "./ToolBar";
 import { RoomPanel } from "./RoomPanel";
@@ -21,6 +20,7 @@ function useShortcuts() {
       const s = useStudio.getState();
       const k = e.key.toLowerCase();
       if ((e.metaKey || e.ctrlKey) && k === "z") { e.preventDefault(); if (e.shiftKey) s.redo(); else s.undo(); return; }
+      if ((e.metaKey || e.ctrlKey) && k === "s") { e.preventDefault(); s.saveAs(s.name); s.say(`Saved "${s.name}" in this browser.`); return; }
       if ((e.metaKey || e.ctrlKey) && k === "d" && s.selectedId) { e.preventDefault(); s.duplicate(s.selectedId); return; }
       if (e.metaKey || e.ctrlKey) return;
       const sel = s.objects.find((o) => o.id === s.selectedId);
@@ -29,7 +29,7 @@ function useShortcuts() {
       else if (k === "1") s.setView("orbit");
       else if (k === "2") s.setView("walk");
       else if (k === "3") s.setView("plan");
-      else if (k === "escape") { s.select(null); s.clearMeasure(); }
+      else if (k === "escape") { s.select(null); s.clearMeasure(); s.setComparing(false); }
       else if (sel && k === "r") s.patch(sel.id, { rot: sel.rot + (e.shiftKey ? -ROT_STEP : ROT_STEP) });
       else if (sel && (k === "delete" || k === "backspace")) s.remove(sel.id);
     };
@@ -53,31 +53,25 @@ function Loading() {
   );
 }
 
+function Toast() {
+  const notice = useStudio((s) => s.notice);
+  if (!notice) return null;
+  return <p role="status" className="panel pointer-events-none absolute bottom-[92px] left-1/2 z-30 w-max max-w-[calc(100vw-24px)] -translate-x-1/2 bg-ink px-3.5 py-2 text-[13.5px] font-medium text-white" style={{ background: "var(--color-ink)" }}>{notice}</p>;
+}
+
 export function Studio() {
   useShortcuts();
   const view = useStudio((s) => s.view);
-  const scan = useStudio((s) => s.scan);
-  const setScanMeta = useStudio((s) => s.setScanMeta);
   const hydrate = useStudio((s) => s.hydrate);
+  const fromScan = useStudio((s) => s.scanResult !== null);
   const [panelOpen, setPanelOpen] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
-  const [metaFailed, setMetaFailed] = useState(false);
 
   useEffect(() => {
     hydrate();
     if (window.matchMedia("(min-width: 1024px)").matches) setPanelOpen(true);
   }, [hydrate]);
-
-  useEffect(() => {
-    if (!scan) return;
-    let stale = false;
-    setMetaFailed(false); setPanelOpen(true);
-    fetch(scan.metaUrl)
-      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-      .then((m: ScanMeta) => { if (!stale) setScanMeta(m); })
-      .catch(() => { if (!stale) setMetaFailed(true); });
-    return () => { stale = true; };
-  }, [scan, setScanMeta]);
+  useEffect(() => { if (fromScan) setPanelOpen(true); }, [fromScan]);
 
   return (
     <main className="fixed inset-0 select-none overflow-hidden bg-studio">
@@ -88,12 +82,8 @@ export function Studio() {
       <Inspector />
       {view === "walk" && <WalkPad />}
       <ToolBar />
+      <Toast />
       <UploadDialog open={uploadOpen} onClose={() => setUploadOpen(false)} />
-      {metaFailed && (
-        <p className="panel absolute left-1/2 top-20 -translate-x-1/2 px-3 py-2 text-[14px]" role="alert">
-          The scan&apos;s details did not load. Check that the reconstruction service is still running.
-        </p>
-      )}
     </main>
   );
 }

@@ -13,10 +13,10 @@ const right = new THREE.Vector3();
 /** First-person walk: drag to look, WASD / arrows / touch pad to move. Stays inside the estimated walls. */
 function Walk() {
   const { camera, gl } = useThree();
-  const look = useRef({ yaw: 0.5, pitch: -0.08 });
+  const look = useRef({ yaw: 0, pitch: -0.08 });
 
   useEffect(() => {
-    camera.position.set(0.6, EYE, 1.0);
+    camera.position.set(0, EYE, useStudio.getState().room.depth / 2 - 0.6);
     const el = gl.domElement;
     let last: { x: number; y: number } | null = null;
     const down = (e: PointerEvent) => { last = { x: e.clientX, y: e.clientY }; el.setPointerCapture(e.pointerId); };
@@ -53,8 +53,7 @@ function Walk() {
     const step = Math.min(dt, 0.1) * SPEED;
     camera.position.addScaledVector(forward, walkInput.forward * step).addScaledVector(right, walkInput.strafe * step);
     const st = useStudio.getState();
-    const hx = (st.showRoom ? st.room.width : (st.scanMeta?.envelope.width_m ?? 4) * st.calibration) / 2 - 0.3;
-    const hz = (st.showRoom ? st.room.depth : (st.scanMeta?.envelope.depth_m ?? 4) * st.calibration) / 2 - 0.3;
+    const hx = st.room.width / 2 - 0.3, hz = st.room.depth / 2 - 0.3;
     camera.position.x = THREE.MathUtils.clamp(camera.position.x, -hx, hx);
     camera.position.z = THREE.MathUtils.clamp(camera.position.z, -hz, hz);
     camera.position.y = EYE;
@@ -66,11 +65,7 @@ export function CameraRig() {
   const view = useStudio((s) => s.view);
   const dragging = useStudio((s) => s.dragging);
   const { camera, size } = useThree();
-  // Frame whatever is on show: the clean room, or a raw scan before a room has been made from it.
-  const span = useStudio((s) => {
-    if (s.showRoom) return Math.max(s.room.width, s.room.depth);
-    return s.scanMeta ? Math.max(s.scanMeta.envelope.width_m, s.scanMeta.envelope.depth_m, 2) * s.calibration : 4.6;
-  });
+  const span = useStudio((s) => Math.max(s.room.width, s.room.depth));
   const f = span / 5.6;
   useEffect(() => {
     const cam = camera as THREE.PerspectiveCamera;

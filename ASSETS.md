@@ -1,29 +1,31 @@
 # Assets and licences
 
-Everything shipped in `apps/web/public` is either made for this project or CC0 (public domain dedication),
-so it can be used on a public site and in a portfolio without attribution. Credit is given anyway.
+## Amazon Berkeley Objects (ABO) · CC BY 4.0 · https://amazon-berkeley-objects.s3.amazonaws.com/index.html
+60 furniture and decor models in `apps/web/public/models` whose file names start with `B0`: beds, nightstands, desks, chairs,
+armchairs, sofas, ottomans, dressers, wardrobes, bookcases, floor and table lamps, mirrors, pillows, planters and rugs.
 
-## Poly Haven (CC0) · https://polyhaven.com
+Attribution (required by the licence): *Collins et al., "ABO: Dataset and Benchmarks for Real-World 3D Object Understanding",
+CVPR 2022. 3D models © Amazon.com, licensed under CC BY 4.0.*
 
-Models (`public/models`, converted to GLB with 1k WebP textures and meshopt compression; three were simplified to 40% of their triangles):
-`modern_arm_chair_01`, `mid_century_lounge_chair`, `side_table_01`, `coffee_table_round_01`, `wooden_display_shelves_01`,
-`drawer_cabinet`, `modern_wooden_cabinet`, `steel_frame_shelves_03`, `wicker_basket_02`, `potted_plant_01`, `potted_plant_02`,
-`potted_plant_04`, `desk_lamp_arm_01`, `ceramic_vase_01`, `ceramic_vase_03`, `standing_picture_frame_01`,
-`book_encyclopedia_set_01`, `throw_pillows_01`. Catalogue thumbnails in `public/thumbs` are Poly Haven's previews of the same models.
+Changes made: converted to compressed GLB (meshopt, 1k WebP textures), simplified to at most about 26k triangles, given generic
+names, and their colour textures are recoloured at run time when a user picks a different material colour. The models depict
+real retail products; this project is not affiliated with or endorsed by Amazon or the product brands.
 
-Materials (`public/textures`, 1k, colour + normal + roughness): `wood_floor`, `laminate_floor_02`, `herringbone_parquet`,
-`oak_veneer_01`, `plywood`, `black_oak_veneer`, `cotton_jersey`, `wool_boucle`.
-
-Lighting environment (`public/env/studio.hdr`): `photo_studio_loft_hall`, 1k.
+## Poly Haven · CC0 · https://polyhaven.com
+Models: `modern_arm_chair_01`, `coffee_table_round_01`, `wooden_display_shelves_01`, `modern_wooden_cabinet`, `wicker_basket_02`,
+`potted_plant_01`, `potted_plant_02`, `potted_plant_04`, `desk_lamp_arm_01`, `ceramic_vase_01`, `ceramic_vase_03`, `book_encyclopedia_set_01`.
+Floor materials (`public/textures`): `wood_floor`, `laminate_floor_02`, `herringbone_parquet`. Lighting environment: `photo_studio_loft_hall`.
 
 ## Made for this project
-The room shell (walls, floor, windows, skirting), the platform beds, desk, desk chair, rugs and framed print are generated in
-code (`components/scene/Room.tsx`, `Built.tsx`). The print's artwork is two plain shapes, not a reproduction of an existing work.
+Room shell (walls, floor, windows, doors, skirting), catalogue thumbnails (rendered from the models by `tools/render_thumbs.py`),
+and the per-model part masks (`*.mask.png`, from `tools/build_catalog.py`).
+
+## Models downloaded at setup, not stored here
+- Depth Anything 3 Base and Metric-Large (Apache 2.0): depth and camera poses.
+- OneFormer Swin-Tiny trained on ADE20K (code MIT; see the model card for the weights and the ADE20K dataset terms): finds furniture, windows and doors.
 
 ## Not shipped
-- Depth Anything 3 (model code cloned by `setup.sh`; Base and Metric-Large weights are Apache 2.0) is downloaded at setup, not stored here.
-- Test photos used during development came from another project's example folder and are not in this repository.
-- The Redwood bedroom scan used as the first demo has been removed.
+Test photos used in development came from another project's example folder and are not in this repository.
 
 ## Font
 Bricolage Grotesque, SIL Open Font License, via Fontsource.

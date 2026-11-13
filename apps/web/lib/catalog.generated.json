@@ -1,0 +1,2394 @@
+[
+ {
+  "id": "B075X2LMTC",
+  "name": "Arched fabric bed",
+  "cls": "bed",
+  "category": "Beds",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   1.587,
+   1.279,
+   2.171
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "fabric",
+    "color": "#d0ccc7",
+    "share": 0.424,
+    "lum": 0.6194
+   },
+   {
+    "kind": "fabric",
+    "color": "#562815",
+    "share": 0.418,
+    "lum": 0.0321
+   },
+   {
+    "kind": "fabric",
+    "color": "#030303",
+    "share": 0.159,
+    "lum": 0.0001
+   }
+  ],
+  "partsMaterial": "\"AILCEBIDKJCAAAAAFMBAAAAAAAAANLBLGDBF\"",
+  "surface": 0.702
+ },
+ {
+  "id": "B075QFCHM9",
+  "name": "Low platform bed",
+  "cls": "bed",
+  "category": "Beds",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   1.84,
+   1.067,
+   2.368
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "fabric",
+    "color": "#bbbab6",
+    "share": 0.74,
+    "lum": 0.5021
+   },
+   {
+    "kind": "fabric",
+    "color": "#252525",
+    "share": 0.136,
+    "lum": 0.0154
+   },
+   {
+    "kind": "wood",
+    "color": "#b89669",
+    "share": 0.124,
+    "lum": 0.3392
+   }
+  ],
+  "partsMaterial": "\"AEKOIJIHJDCAAAAAFMBAAAAAAAAAEPMPCFPM\"",
+  "surface": 0.516
+ },
+ {
+  "id": "B07B4SCPH1",
+  "name": "Upholstered bed, brass legs",
+  "cls": "bed",
+  "category": "Beds",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   1.723,
+   1.231,
+   2.172
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "fabric",
+    "color": "#243958",
+    "share": 0.559,
+    "lum": 0.0368
+   },
+   {
+    "kind": "fabric",
+    "color": "#303030",
+    "share": 0.311,
+    "lum": 0.0259
+   },
+   {
+    "kind": "fabric",
+    "color": "#cdc7ba",
+    "share": 0.131,
+    "lum": 0.5996
+   }
+  ],
+  "partsMaterial": "\"AINLMMJFPNBAAAAAFMBAAAAAAAAADEFODCBA\"",
+  "surface": 0.617
+ },
+ {
+  "id": "B07B4VY16J",
+  "name": "Tufted bed",
+  "cls": "bed",
+  "category": "Beds",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   1.698,
+   1.427,
+   2.387
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "fabric",
+    "color": "#beaf98",
+    "share": 0.833,
+    "lum": 0.4541
+   },
+   {
+    "kind": "fabric",
+    "color": "#bcbcbc",
+    "share": 0.167,
+    "lum": 0.5114
+   }
+  ],
+  "partsMaterial": "\"AAELMDPPIGCAAAAAFMBAAAAAAAAAKIMJIOOL\"",
+  "surface": 0.734
+ },
+ {
+  "id": "B071FJR3T4",
+  "name": "Pine panel bed",
+  "cls": "bed",
+  "category": "Beds",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   1.936,
+   1.686,
+   2.201
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "fabric",
+    "color": "#ba874f",
+    "share": 0.855,
+    "lum": 0.2949
+   },
+   {
+    "kind": "fabric",
+    "color": "#eeeeed",
+    "share": 0.145,
+    "lum": 0.8558
+   }
+  ],
+  "partsMaterial": "\"ABOLIIPPMNBAAAAAFMBAAAAAAAAAPMODHOGC\"",
+  "surface": 0.671
+ },
+ {
+  "id": "B07QD6TXWS",
+  "name": "Two-drawer nightstand",
+  "cls": "nightstand",
+  "category": "Tables",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.571,
+   0.61,
+   0.407
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "wood",
+    "color": "#ae8f6d",
+    "share": 0.485,
+    "lum": 0.3027
+   },
+   {
+    "kind": "paint",
+    "color": "#d8dad7",
+    "share": 0.397,
+    "lum": 0.7037
+   },
+   {
+    "kind": "paint",
+    "color": "#150800",
+    "share": 0.118,
+    "lum": 0.0013
+   }
+  ],
+  "partsMaterial": "\"ABLAEIFECLBAAAAAFMBAAAAAAAAALNDFEGNA\"",
+  "surface": 0.369
+ },
+ {
+  "id": "B07RPZSM4W",
+  "name": "Open nightstand",
+  "cls": "nightstand",
+  "category": "Tables",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.45,
+   0.53,
+   0.38
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "wood",
+    "color": "#bc9f81",
+    "share": 0.725,
+    "lum": 0.3765
+   },
+   {
+    "kind": "paint",
+    "color": "#a19ca0",
+    "share": 0.275,
+    "lum": 0.3535
+   }
+  ],
+  "partsMaterial": "B07RPZSM4W_MAT_MR",
+  "surface": 0.273
+ },
+ {
+  "id": "B072ZMHBKQ",
+  "name": "Lacquer side table",
+  "cls": "nightstand",
+  "category": "Tables",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.37,
+   0.508,
+   0.288
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "paint",
+    "color": "#7f766d",
+    "share": 0.63,
+    "lum": 0.1886
+   },
+   {
+    "kind": "metal",
+    "color": "#e2e2e0",
+    "share": 0.23,
+    "lum": 0.7689
+   },
+   {
+    "kind": "wood",
+    "color": "#8b6645",
+    "share": 0.14,
+    "lum": 0.158
+   }
+  ],
+  "partsMaterial": "\"ABLKGHKIDCCAAAAAFMBAAAAAAAAAJKHADNEO\"",
+  "surface": 0.506
+ },
+ {
+  "id": "B0728KSP33",
+  "name": "Louvered nightstand",
+  "cls": "nightstand",
+  "category": "Tables",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.557,
+   0.609,
+   0.449
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "wood",
+    "color": "#462315",
+    "share": 0.871,
+    "lum": 0.0223
+   },
+   {
+    "kind": "wood",
+    "color": "#d39f74",
+    "share": 0.129,
+    "lum": 0.4091
+   }
+  ],
+  "partsMaterial": "\"B0728KSP33_TRB_MDL_MR\"",
+  "surface": 0.607
+ },
+ {
+  "id": "B07HSCN9RM",
+  "name": "Mid-century desk",
+  "cls": "desk",
+  "category": "Tables",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   1.204,
+   0.917,
+   0.384
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "paint",
+    "color": "#643519",
+    "share": 1.0,
+    "lum": 0.0554
+   }
+  ],
+  "partsMaterial": "\"ADPJHCLOBIBAAAAAFMBAAAAAAAAANPCAKBJM\"",
+  "surface": 0.915
+ },
+ {
+  "id": "B08C2NYN5Y",
+  "name": "Simple writing desk",
+  "cls": "desk",
+  "category": "Tables",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   1.2,
+   0.75,
+   0.6
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "paint",
+    "color": "#dbcbb0",
+    "share": 0.539,
+    "lum": 0.6167
+   },
+   {
+    "kind": "paint",
+    "color": "#ededed",
+    "share": 0.401,
+    "lum": 0.8512
+   },
+   {
+    "kind": "paint",
+    "color": "#414141",
+    "share": 0.06,
+    "lum": 0.0503
+   }
+  ],
+  "partsMaterial": "ASSET_MAT_MR",
+  "surface": 0.747
+ },
+ {
+  "id": "B07GFT7H76",
+  "name": "Four-drawer desk",
+  "cls": "desk",
+  "category": "Tables",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   1.096,
+   0.73,
+   0.56
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "paint",
+    "color": "#fefefe",
+    "share": 1.0,
+    "lum": 0.9961
+   }
+  ],
+  "partsMaterial": "B07GFT7H76_MAT_MR",
+  "surface": 0.726
+ },
+ {
+  "id": "B07QC6354F",
+  "name": "Hairpin desk",
+  "cls": "desk",
+  "category": "Tables",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.991,
+   0.66,
+   0.499
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "paint",
+    "color": "#2f302b",
+    "share": 0.685,
+    "lum": 0.0244
+   },
+   {
+    "kind": "wood",
+    "color": "#d7b97c",
+    "share": 0.315,
+    "lum": 0.5131
+   }
+  ],
+  "partsMaterial": "B07QC6354F_MAT_MR",
+  "surface": 0.66
+ },
+ {
+  "id": "coffee_table_round_01",
+  "name": "Round coffee table",
+  "cls": "table",
+  "category": "Tables",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   1.301,
+   0.491,
+   1.301
+  ],
+  "source": "polyhaven",
+  "parts": [
+   {
+    "kind": "paint",
+    "color": "#b5bbcb",
+    "share": 0.526,
+    "lum": 0.506
+   },
+   {
+    "kind": "paint",
+    "color": "#1e1e1d",
+    "share": 0.397,
+    "lum": 0.0094
+   },
+   {
+    "kind": "metal",
+    "color": "#494949",
+    "share": 0.077,
+    "lum": 0.0653
+   }
+  ],
+  "partsMaterial": "coffee_table_round_01",
+  "surface": 0.491
+ },
+ {
+  "id": "B075YMXWZM",
+  "name": "Walnut chair",
+  "cls": "chair",
+  "category": "Seating",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.496,
+   0.801,
+   0.499
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "fabric",
+    "color": "#955536",
+    "share": 1.0,
+    "lum": 0.132
+   }
+  ],
+  "partsMaterial": "\"AJFBHPOHAGBAAAAAFMBAAAAAAAAADEOAGDBM\""
+ },
+ {
+  "id": "B085559VGM",
+  "name": "Shell chair",
+  "cls": "chair",
+  "category": "Seating",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.593,
+   0.781,
+   0.504
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "fabric",
+    "color": "#bca79f",
+    "share": 0.766,
+    "lum": 0.4161
+   },
+   {
+    "kind": "wood",
+    "color": "#ad7c64",
+    "share": 0.163,
+    "lum": 0.2565
+   },
+   {
+    "kind": "fabric",
+    "color": "#dedde0",
+    "share": 0.071,
+    "lum": 0.7368
+   }
+  ],
+  "partsMaterial": "\"B085559VGM_TRB_MDL_MR\""
+ },
+ {
+  "id": "B00IIFW2L4",
+  "name": "Mesh office chair",
+  "cls": "chair",
+  "category": "Seating",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.61,
+   1.026,
+   0.64
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "fabric",
+    "color": "#161616",
+    "share": 0.833,
+    "lum": 0.0068
+   },
+   {
+    "kind": "fabric",
+    "color": "#000000",
+    "share": 0.167,
+    "lum": 0.0
+   }
+  ],
+  "partsMaterial": "B00IIFW2L4_MAT_MR"
+ },
+ {
+  "id": "B0853KR33B",
+  "name": "Upholstered chair",
+  "cls": "chair",
+  "category": "Seating",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.491,
+   0.839,
+   0.589
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "fabric",
+    "color": "#c3bbae",
+    "share": 1.0,
+    "lum": 0.5258
+   }
+  ],
+  "partsMaterial": "\"B0853KR33B_TRB_MDL_MR\""
+ },
+ {
+  "id": "B07B7DMMTH",
+  "name": "Soft office chair",
+  "cls": "chair",
+  "category": "Seating",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.597,
+   0.811,
+   0.696
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "fabric",
+    "color": "#726963",
+    "share": 0.802,
+    "lum": 0.1474
+   },
+   {
+    "kind": "fabric",
+    "color": "#201d1f",
+    "share": 0.198,
+    "lum": 0.0099
+   }
+  ],
+  "partsMaterial": "\"AMJJENODFECAAAAAFMBAAAAAAAAAGCDABJNH\""
+ },
+ {
+  "id": "B072PZVYC2",
+  "name": "Leather accent chair",
+  "cls": "armchair",
+  "category": "Seating",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.719,
+   0.861,
+   0.889
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "fabric",
+    "color": "#1d1c1b",
+    "share": 0.501,
+    "lum": 0.0078
+   },
+   {
+    "kind": "wood",
+    "color": "#6f3e2c",
+    "share": 0.499,
+    "lum": 0.0759
+   }
+  ],
+  "partsMaterial": "B072PZVYC2_MAT_MR"
+ },
+ {
+  "id": "B071J7Q9WN",
+  "name": "Steel-arm leather chair",
+  "cls": "armchair",
+  "category": "Seating",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.651,
+   0.777,
+   0.801
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "fabric",
+    "color": "#996033",
+    "share": 0.836,
+    "lum": 0.158
+   },
+   {
+    "kind": "metal",
+    "color": "#4c4d4d",
+    "share": 0.164,
+    "lum": 0.0713
+   }
+  ],
+  "partsMaterial": "\"AEMPLKBICBCAAAAAFMBAAAAAAAAACDJNLMFH\""
+ },
+ {
+  "id": "B071W5VJFK",
+  "name": "Tufted armchair",
+  "cls": "armchair",
+  "category": "Seating",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.821,
+   0.88,
+   0.843
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "fabric",
+    "color": "#96938d",
+    "share": 1.0,
+    "lum": 0.3015
+   }
+  ],
+  "partsMaterial": "\"AEMOBKNJDKBAAAAAFMBAAAAAAAAAHGJBFBKO\""
+ },
+ {
+  "id": "B075X4F3R5",
+  "name": "Low-arm leather chair",
+  "cls": "armchair",
+  "category": "Seating",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.753,
+   0.883,
+   0.851
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "fabric",
+    "color": "#a97049",
+    "share": 1.0,
+    "lum": 0.2108
+   }
+  ],
+  "partsMaterial": "\"AOGDEKALEDCAAAAAFMBAAAAAAAAAKDKJPEHC\""
+ },
+ {
+  "id": "B07DBDV64G",
+  "name": "Rolled-arm armchair",
+  "cls": "armchair",
+  "category": "Seating",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.781,
+   0.875,
+   0.75
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "fabric",
+    "color": "#b4b5b0",
+    "share": 1.0,
+    "lum": 0.4956
+   }
+  ],
+  "partsMaterial": "\"APCFFJGAEECAAAAAFMBAAAAAAAAAJKBJEJEM\""
+ },
+ {
+  "id": "modern_arm_chair_01",
+  "name": "Wood-frame lounge chair",
+  "cls": "armchair",
+  "category": "Seating",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.82,
+   1.023,
+   0.987
+  ],
+  "source": "polyhaven",
+  "parts": [
+   {
+    "kind": "fabric",
+    "color": "#876242",
+    "share": 0.608,
+    "lum": 0.144
+   },
+   {
+    "kind": "wood",
+    "color": "#765235",
+    "share": 0.301,
+    "lum": 0.1007
+   },
+   {
+    "kind": "wood",
+    "color": "#603c22",
+    "share": 0.091,
+    "lum": 0.0561
+   }
+  ],
+  "partsMaterial": "modern_arm_chair_01_legs"
+ },
+ {
+  "id": "B07G2HBKB4",
+  "name": "Three-seat sofa",
+  "cls": "sofa",
+  "category": "Seating",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   2.177,
+   0.93,
+   1.121
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "fabric",
+    "color": "#9b9b9b",
+    "share": 1.0,
+    "lum": 0.3377
+   }
+  ],
+  "partsMaterial": "\"B07G2HBKB4_TRB_MDL_MR\""
+ },
+ {
+  "id": "B07J2JGT7Y",
+  "name": "Leather sofa",
+  "cls": "sofa",
+  "category": "Seating",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   2.036,
+   0.945,
+   0.981
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "fabric",
+    "color": "#7f522b",
+    "share": 1.0,
+    "lum": 0.1069
+   }
+  ],
+  "partsMaterial": "\"B07J2JGT7Y_TRB_MDL_MR\""
+ },
+ {
+  "id": "B07J2JGXD7",
+  "name": "Tufted sofa",
+  "cls": "sofa",
+  "category": "Seating",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   2.06,
+   0.837,
+   0.849
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "fabric",
+    "color": "#284d58",
+    "share": 1.0,
+    "lum": 0.0655
+   }
+  ],
+  "partsMaterial": "\"B07J2JGXD7_TRB_MDL_MR\""
+ },
+ {
+  "id": "B07P5LM42Y",
+  "name": "Mid-century sofa",
+  "cls": "sofa",
+  "category": "Seating",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   2.211,
+   0.762,
+   0.914
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "fabric",
+    "color": "#87837a",
+    "share": 1.0,
+    "lum": 0.2328
+   }
+  ],
+  "partsMaterial": "\"ADELJOGMILCAAAAAFMBAAAAAAAAACIFKOJKF\""
+ },
+ {
+  "id": "B07J2VY54Z",
+  "name": "Ottoman",
+  "cls": "ottoman",
+  "category": "Seating",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.856,
+   0.498,
+   0.563
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "fabric",
+    "color": "#1a4e56",
+    "share": 1.0,
+    "lum": 0.0624
+   }
+  ],
+  "partsMaterial": "\"AJPJMAOADMBAAAAAFMBAAAAAAAAAJCEDMNGL\"",
+  "surface": 0.495
+ },
+ {
+  "id": "B0871DCNRM",
+  "name": "Storage bench",
+  "cls": "ottoman",
+  "category": "Seating",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.902,
+   0.432,
+   0.419
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "fabric",
+    "color": "#8f8f8f",
+    "share": 1.0,
+    "lum": 0.2822
+   }
+  ],
+  "partsMaterial": "\"B0871DCNRM_TRB_MDL_MR\"",
+  "surface": 0.431
+ },
+ {
+  "id": "B07B4DB65T",
+  "name": "Round tufted pouf",
+  "cls": "ottoman",
+  "category": "Seating",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.998,
+   0.399,
+   0.998
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "fabric",
+    "color": "#97847c",
+    "share": 0.724,
+    "lum": 0.2518
+   },
+   {
+    "kind": "wood",
+    "color": "#2e261f",
+    "share": 0.276,
+    "lum": 0.0165
+   }
+  ],
+  "partsMaterial": "B07B4DB65T_MAT_MR",
+  "surface": 0.393
+ },
+ {
+  "id": "B07GFL6W68",
+  "name": "Six-drawer chest",
+  "cls": "dresser",
+  "category": "Storage",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   1.535,
+   0.79,
+   0.333
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "paint",
+    "color": "#dfdfe7",
+    "share": 0.93,
+    "lum": 0.7489
+   },
+   {
+    "kind": "metal",
+    "color": "#b2b1c1",
+    "share": 0.07,
+    "lum": 0.4558
+   }
+  ],
+  "partsMaterial": "\"B07GFL6W68_TRB_MDL_MR\"",
+  "surface": 0.786
+ },
+ {
+  "id": "B071FJR479",
+  "name": "Oak dresser",
+  "cls": "dresser",
+  "category": "Storage",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   1.523,
+   0.889,
+   0.512
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "wood",
+    "color": "#4a311d",
+    "share": 1.0,
+    "lum": 0.0355
+   }
+  ],
+  "partsMaterial": "\"AHEPHDMPFKCAAAAAFMBAAAAAAAAAKMHNDABP\"",
+  "surface": 0.884
+ },
+ {
+  "id": "B07HSL4TS1",
+  "name": "Three-drawer chest",
+  "cls": "dresser",
+  "category": "Storage",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.905,
+   0.721,
+   0.457
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "paint",
+    "color": "#d8d4ce",
+    "share": 1.0,
+    "lum": 0.6767
+   }
+  ],
+  "partsMaterial": "\"AMDAMPNGMBCAAAAAFMBAAAAAAAAALPMAPPPF\"",
+  "surface": 0.718
+ },
+ {
+  "id": "B075X2PC3L",
+  "name": "Two-tone dresser",
+  "cls": "dresser",
+  "category": "Storage",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   1.558,
+   0.872,
+   0.463
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "paint",
+    "color": "#5c2b07",
+    "share": 0.537,
+    "lum": 0.0379
+   },
+   {
+    "kind": "paint",
+    "color": "#161614",
+    "share": 0.463,
+    "lum": 0.0046
+   }
+  ],
+  "partsMaterial": "\"AKKOMCFCAECAAAAAFMBAAAAAAAAAKGKMEJLA\"",
+  "surface": 0.867
+ },
+ {
+  "id": "B075YZPG5Y",
+  "name": "Seven-drawer dresser",
+  "cls": "dresser",
+  "category": "Storage",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   1.261,
+   0.825,
+   0.479
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "wood",
+    "color": "#93653a",
+    "share": 0.797,
+    "lum": 0.1609
+   },
+   {
+    "kind": "wood",
+    "color": "#38271a",
+    "share": 0.114,
+    "lum": 0.0212
+   },
+   {
+    "kind": "paint",
+    "color": "#b9b8b6",
+    "share": 0.088,
+    "lum": 0.4882
+   }
+  ],
+  "partsMaterial": "\"ALBMELFAEBCAAAAAFMBAAAAAAAAACCKNJAII\"",
+  "surface": 0.821
+ },
+ {
+  "id": "B079TYF1GK",
+  "name": "Two-door wardrobe",
+  "cls": "wardrobe",
+  "category": "Storage",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.76,
+   1.7,
+   0.47
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "paint",
+    "color": "#f1f1f1",
+    "share": 1.0,
+    "lum": 0.8825
+   }
+  ],
+  "partsMaterial": "B079TYF1GK_MAT_MR"
+ },
+ {
+  "id": "B07H8V7P3H",
+  "name": "Oak and white wardrobe",
+  "cls": "wardrobe",
+  "category": "Storage",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   1.0,
+   1.96,
+   0.6
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "paint",
+    "color": "#bdb0a6",
+    "share": 0.768,
+    "lum": 0.4538
+   },
+   {
+    "kind": "paint",
+    "color": "#ffffff",
+    "share": 0.232,
+    "lum": 0.999
+   }
+  ],
+  "partsMaterial": "B07H8V7P3H_MAT_MR"
+ },
+ {
+  "id": "B07H8JN9QF",
+  "name": "Mirrored wardrobe",
+  "cls": "wardrobe",
+  "category": "Storage",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   1.998,
+   2.159,
+   0.598
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "wood",
+    "color": "#a18d80",
+    "share": 0.887,
+    "lum": 0.2978
+   },
+   {
+    "kind": "paint",
+    "color": "#b8b9b7",
+    "share": 0.113,
+    "lum": 0.4974
+   }
+  ],
+  "partsMaterial": "\"ABGLCCNOMLBAAAAAFMBAAAAAAAAAKEDKPMKH\""
+ },
+ {
+  "id": "B07GFS1R5B",
+  "name": "Three-door wardrobe",
+  "cls": "wardrobe",
+  "category": "Storage",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   1.29,
+   1.91,
+   0.51
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "paint",
+    "color": "#414141",
+    "share": 1.0,
+    "lum": 0.0523
+   }
+  ],
+  "partsMaterial": "B07GFS1R5B_MAT_MR"
+ },
+ {
+  "id": "B07QF9X1LH",
+  "name": "White bookcase",
+  "cls": "bookcase",
+  "category": "Storage",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   1.05,
+   1.88,
+   0.432
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "paint",
+    "color": "#ebebe9",
+    "share": 1.0,
+    "lum": 0.8339
+   }
+  ],
+  "partsMaterial": "\"ACINGIMMAPBAAAAAFMBAAAAAAAAAFOOFGJAM\"",
+  "surface": 1.869
+ },
+ {
+  "id": "B07HSCNKCT",
+  "name": "Mixed bookcase",
+  "cls": "bookcase",
+  "category": "Storage",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.748,
+   1.471,
+   0.308
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "wood",
+    "color": "#9c8369",
+    "share": 0.4,
+    "lum": 0.248
+   },
+   {
+    "kind": "wood",
+    "color": "#b9a186",
+    "share": 0.312,
+    "lum": 0.3863
+   },
+   {
+    "kind": "wood",
+    "color": "#796048",
+    "share": 0.288,
+    "lum": 0.1325
+   }
+  ],
+  "partsMaterial": "\"AKKGKKCAGBCAAAAAFMBAAAAAAAAALMOCBKNC\"",
+  "surface": 1.463
+ },
+ {
+  "id": "B07QTB45S5",
+  "name": "Tall open bookcase",
+  "cls": "bookcase",
+  "category": "Storage",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.77,
+   1.85,
+   0.35
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "wood",
+    "color": "#ae9377",
+    "share": 0.647,
+    "lum": 0.3184
+   },
+   {
+    "kind": "paint",
+    "color": "#3b3b3c",
+    "share": 0.353,
+    "lum": 0.0402
+   }
+  ],
+  "partsMaterial": "B07QTB45S5_MAT_MR",
+  "surface": 1.841
+ },
+ {
+  "id": "B07QW1L8H6",
+  "name": "Zigzag bookcase",
+  "cls": "bookcase",
+  "category": "Storage",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.89,
+   1.65,
+   0.25
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "paint",
+    "color": "#e4e4e4",
+    "share": 1.0,
+    "lum": 0.7827
+   }
+  ],
+  "partsMaterial": "B07QW1L8H6_MAT_MR",
+  "surface": 1.643
+ },
+ {
+  "id": "wooden_display_shelves_01",
+  "name": "Cube shelves",
+  "cls": "bookcase",
+  "category": "Storage",
+  "place": "floor",
+  "yaw": -90,
+  "scale": 1.0,
+  "size": [
+   1.078,
+   1.556,
+   0.372
+  ],
+  "source": "polyhaven",
+  "parts": [
+   {
+    "kind": "wood",
+    "color": "#c68e5d",
+    "share": 0.645,
+    "lum": 0.3284
+   },
+   {
+    "kind": "paint",
+    "color": "#c5c4c2",
+    "share": 0.226,
+    "lum": 0.5596
+   },
+   {
+    "kind": "wood",
+    "color": "#a3744b",
+    "share": 0.129,
+    "lum": 0.2123
+   }
+  ],
+  "partsMaterial": "wooden_display_shelves_01",
+  "surface": 1.537
+ },
+ {
+  "id": "modern_wooden_cabinet",
+  "name": "Sideboard",
+  "cls": "dresser",
+  "category": "Storage",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   2.44,
+   0.68,
+   0.52
+  ],
+  "source": "polyhaven",
+  "parts": [
+   {
+    "kind": "wood",
+    "color": "#2d1d12",
+    "share": 0.6,
+    "lum": 0.0117
+   },
+   {
+    "kind": "wood",
+    "color": "#422b18",
+    "share": 0.313,
+    "lum": 0.0266
+   },
+   {
+    "kind": "wood",
+    "color": "#9a7844",
+    "share": 0.087,
+    "lum": 0.2153
+   }
+  ],
+  "partsMaterial": "modern_wooden_cabinet",
+  "surface": 0.677
+ },
+ {
+  "id": "wicker_basket_02",
+  "name": "Wicker basket",
+  "cls": "basket",
+  "category": "Storage",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.9,
+  "size": [
+   0.659,
+   0.381,
+   0.483
+  ],
+  "source": "polyhaven",
+  "parts": [
+   {
+    "kind": "wood",
+    "color": "#a7784b",
+    "share": 0.453,
+    "lum": 0.2257
+   },
+   {
+    "kind": "wood",
+    "color": "#c09264",
+    "share": 0.371,
+    "lum": 0.3357
+   },
+   {
+    "kind": "wood",
+    "color": "#85552d",
+    "share": 0.176,
+    "lum": 0.1208
+   }
+  ],
+  "partsMaterial": "wicker_basket_02"
+ },
+ {
+  "id": "B07DTLF7DN",
+  "name": "Globe floor lamp",
+  "cls": "floor_lamp",
+  "category": "Lighting",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.249,
+   1.505,
+   0.476
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "metal",
+    "color": "#b7a074",
+    "share": 0.604,
+    "lum": 0.3738
+   },
+   {
+    "kind": "paint",
+    "color": "#929293",
+    "share": 0.396,
+    "lum": 0.2927
+   }
+  ],
+  "partsMaterial": "\"B07DTLF7DN_TRB_MDL_MR\""
+ },
+ {
+  "id": "B073P36T7M",
+  "name": "Arc floor lamp",
+  "cls": "floor_lamp",
+  "category": "Lighting",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   1.02,
+   2.055,
+   0.667
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "paint",
+    "color": "#c9c8c8",
+    "share": 0.726,
+    "lum": 0.5885
+   },
+   {
+    "kind": "metal",
+    "color": "#a38a58",
+    "share": 0.274,
+    "lum": 0.2755
+   }
+  ],
+  "partsMaterial": "\"AFCJBMEGLMBAAAAAFMBAAAAAAAAAIBPGAPGP\""
+ },
+ {
+  "id": "B07374K536",
+  "name": "Task floor lamp",
+  "cls": "floor_lamp",
+  "category": "Lighting",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.235,
+   1.628,
+   0.618
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "paint",
+    "color": "#2a262a",
+    "share": 0.399,
+    "lum": 0.0164
+   },
+   {
+    "kind": "metal",
+    "color": "#e4c8aa",
+    "share": 0.317,
+    "lum": 0.6213
+   },
+   {
+    "kind": "metal",
+    "color": "#a7854a",
+    "share": 0.284,
+    "lum": 0.2603
+   }
+  ],
+  "partsMaterial": "\"ANKKFKEAFICAAAAAFMBAAAAAAAAAALALHIOL\""
+ },
+ {
+  "id": "B075X2LKNZ",
+  "name": "Ceramic table lamp",
+  "cls": "table_lamp",
+  "category": "Lighting",
+  "place": "surface",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.251,
+   0.435,
+   0.251
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "paint",
+    "color": "#ccc4bf",
+    "share": 0.822,
+    "lum": 0.5721
+   },
+   {
+    "kind": "metal",
+    "color": "#af926a",
+    "share": 0.178,
+    "lum": 0.3293
+   }
+  ],
+  "partsMaterial": "\"ANCLHIEKCDBAAAAAFMBAAAAAAAAAKDLKPOFA\""
+ },
+ {
+  "id": "B07HKFXCNC",
+  "name": "Faceted table lamp",
+  "cls": "table_lamp",
+  "category": "Lighting",
+  "place": "surface",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.297,
+   0.522,
+   0.297
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "paint",
+    "color": "#cdcfd5",
+    "share": 1.0,
+    "lum": 0.6364
+   }
+  ],
+  "partsMaterial": "\"ALNLANJCEHCAAAAAFMBAAAAAAAAAELBPNJBE\""
+ },
+ {
+  "id": "B0825CP3NS",
+  "name": "Blond-wood table lamp",
+  "cls": "table_lamp",
+  "category": "Lighting",
+  "place": "surface",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.229,
+   0.47,
+   0.229
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "paint",
+    "color": "#f1f3f3",
+    "share": 0.696,
+    "lum": 0.8959
+   },
+   {
+    "kind": "paint",
+    "color": "#dccfb5",
+    "share": 0.304,
+    "lum": 0.6441
+   }
+  ],
+  "partsMaterial": "\"B0825CP3NS_TRB_MDL_MR\""
+ },
+ {
+  "id": "B07MBFDHM9",
+  "name": "Textured table lamp",
+  "cls": "table_lamp",
+  "category": "Lighting",
+  "place": "surface",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.24,
+   0.511,
+   0.24
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "paint",
+    "color": "#b7b7b9",
+    "share": 0.722,
+    "lum": 0.4867
+   },
+   {
+    "kind": "paint",
+    "color": "#001c3d",
+    "share": 0.278,
+    "lum": 0.0085
+   }
+  ],
+  "partsMaterial": "\"Nope\""
+ },
+ {
+  "id": "desk_lamp_arm_01",
+  "name": "Arm desk lamp",
+  "cls": "table_lamp",
+  "category": "Lighting",
+  "place": "surface",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.202,
+   0.893,
+   0.614
+  ],
+  "source": "polyhaven",
+  "parts": [
+   {
+    "kind": "metal",
+    "color": "#b8b6b4",
+    "share": 0.425,
+    "lum": 0.4966
+   },
+   {
+    "kind": "paint",
+    "color": "#e15e1d",
+    "share": 0.342,
+    "lum": 0.2451
+   },
+   {
+    "kind": "wood",
+    "color": "#9b5a41",
+    "share": 0.234,
+    "lum": 0.1571
+   }
+  ],
+  "partsMaterial": "desk_lamp_arm_01"
+ },
+ {
+  "id": "B084HTZ2C6",
+  "name": "Round mirror with shelf",
+  "cls": "mirror",
+  "category": "Decor",
+  "place": "wall",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.457,
+   0.457,
+   0.133
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "metal",
+    "color": "#e7bf76",
+    "share": 0.711,
+    "lum": 0.567
+   },
+   {
+    "kind": "paint",
+    "color": "#c3c3c3",
+    "share": 0.175,
+    "lum": 0.5665
+   },
+   {
+    "kind": "paint",
+    "color": "#847b6c",
+    "share": 0.113,
+    "lum": 0.2149
+   }
+  ],
+  "partsMaterial": "\"B084HTZ2C6_TRB_MDL_MR\""
+ },
+ {
+  "id": "B084HV5LK3",
+  "name": "Oval mirror",
+  "cls": "mirror",
+  "category": "Decor",
+  "place": "wall",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.222,
+   0.991,
+   0.032
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "metal",
+    "color": "#e6bb73",
+    "share": 0.623,
+    "lum": 0.5468
+   },
+   {
+    "kind": "paint",
+    "color": "#adadad",
+    "share": 0.212,
+    "lum": 0.4297
+   },
+   {
+    "kind": "paint",
+    "color": "#7a7164",
+    "share": 0.165,
+    "lum": 0.1782
+   }
+  ],
+  "partsMaterial": "\"B084HV5LK3_TRB_MDL_MR\""
+ },
+ {
+  "id": "B07RNMNGYF",
+  "name": "Black-frame mirror",
+  "cls": "mirror",
+  "category": "Decor",
+  "place": "wall",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.609,
+   0.915,
+   0.04
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "wood",
+    "color": "#c5a47c",
+    "share": 0.428,
+    "lum": 0.4078
+   },
+   {
+    "kind": "paint",
+    "color": "#353438",
+    "share": 0.38,
+    "lum": 0.0311
+   },
+   {
+    "kind": "metal",
+    "color": "#bcbcbc",
+    "share": 0.192,
+    "lum": 0.5114
+   }
+  ],
+  "partsMaterial": "\"ADANBDFLFACAAAAAFMBAAAAAAAAAEKICKNIN\""
+ },
+ {
+  "id": "B0718ZKL8B",
+  "name": "Full-length mirror",
+  "cls": "mirror",
+  "category": "Decor",
+  "place": "wall",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.812,
+   2.031,
+   0.026
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "wood",
+    "color": "#c09a79",
+    "share": 0.711,
+    "lum": 0.3641
+   },
+   {
+    "kind": "paint",
+    "color": "#8a8a8a",
+    "share": 0.145,
+    "lum": 0.2625
+   },
+   {
+    "kind": "paint",
+    "color": "#b9b9b9",
+    "share": 0.144,
+    "lum": 0.4974
+   }
+  ],
+  "partsMaterial": "\"ALBHIKJBHNCAAAAAFMBAAAAAAAAAEDOGGEKH\""
+ },
+ {
+  "id": "B07BMQ657W",
+  "name": "Striped pillow",
+  "cls": "pillow",
+  "category": "Decor",
+  "place": "surface",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.512,
+   0.506,
+   0.178
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "fabric",
+    "color": "#beb1a2",
+    "share": 0.632,
+    "lum": 0.4589
+   },
+   {
+    "kind": "fabric",
+    "color": "#c6c3ba",
+    "share": 0.233,
+    "lum": 0.5565
+   },
+   {
+    "kind": "fabric",
+    "color": "#a59d98",
+    "share": 0.136,
+    "lum": 0.3543
+   }
+  ],
+  "partsMaterial": "\"AHOAIFKCEFCAAAAAFMBAAAAAAAAAPPMLNHOD\""
+ },
+ {
+  "id": "B07JKJSTYT",
+  "name": "Textured pillow",
+  "cls": "pillow",
+  "category": "Decor",
+  "place": "surface",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.459,
+   0.458,
+   0.181
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "fabric",
+    "color": "#d2c3aa",
+    "share": 0.664,
+    "lum": 0.564
+   },
+   {
+    "kind": "fabric",
+    "color": "#a29a8f",
+    "share": 0.208,
+    "lum": 0.3347
+   },
+   {
+    "kind": "fabric",
+    "color": "#b6b0a7",
+    "share": 0.128,
+    "lum": 0.4488
+   }
+  ],
+  "partsMaterial": "\"AAPNLHCAMDCAAAAAFMBAAAAAAAAACBCANMKB\""
+ },
+ {
+  "id": "B07JL5PT1J",
+  "name": "Patterned pillow",
+  "cls": "pillow",
+  "category": "Decor",
+  "place": "surface",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.504,
+   0.494,
+   0.188
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "fabric",
+    "color": "#191410",
+    "share": 0.746,
+    "lum": 0.0063
+   },
+   {
+    "kind": "fabric",
+    "color": "#c1bdb5",
+    "share": 0.254,
+    "lum": 0.5338
+   }
+  ],
+  "partsMaterial": "\"ACDLINJPAGBAAAAAFMBAAAAAAAAAJKLEOCBB\""
+ },
+ {
+  "id": "B07HSJKY8H",
+  "name": "Planter on stand",
+  "cls": "planter",
+  "category": "Decor",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.35,
+   0.504,
+   0.35
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "paint",
+    "color": "#c1bea1",
+    "share": 0.348,
+    "lum": 0.5138
+   },
+   {
+    "kind": "metal",
+    "color": "#ca9866",
+    "share": 0.329,
+    "lum": 0.3649
+   },
+   {
+    "kind": "paint",
+    "color": "#ece8e2",
+    "share": 0.323,
+    "lum": 0.8156
+   }
+  ],
+  "partsMaterial": "\"B07HSJKY8H_TRB_MDL_MR\""
+ },
+ {
+  "id": "B075HR7LHQ",
+  "name": "Stoneware pot",
+  "cls": "planter",
+  "category": "Decor",
+  "place": "surface",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.16,
+   0.156,
+   0.16
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "metal",
+    "color": "#383330",
+    "share": 0.46,
+    "lum": 0.0306
+   },
+   {
+    "kind": "paint",
+    "color": "#bcc2c6",
+    "share": 0.54,
+    "lum": 0.5423
+   }
+  ],
+  "partsMaterial": "\"ANLADDOJFCCAAAAAFMBAAAAAAAAAFFLCMELJ\""
+ },
+ {
+  "id": "B07QB8L7YC",
+  "name": "Chevron planter",
+  "cls": "planter",
+  "category": "Decor",
+  "place": "surface",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.25,
+   0.239,
+   0.25
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "paint",
+    "color": "#ccc9c2",
+    "share": 0.629,
+    "lum": 0.5948
+   },
+   {
+    "kind": "paint",
+    "color": "#959289",
+    "share": 0.226,
+    "lum": 0.2935
+   },
+   {
+    "kind": "paint",
+    "color": "#6e6b65",
+    "share": 0.145,
+    "lum": 0.1492
+   }
+  ],
+  "partsMaterial": "\"AGOEIKDBHHCAAAAAFMBAAAAAAAAAFOCEBODM\""
+ },
+ {
+  "id": "ceramic_vase_01",
+  "name": "Round vase",
+  "cls": "vase",
+  "category": "Decor",
+  "place": "surface",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.204,
+   0.4,
+   0.204
+  ],
+  "source": "polyhaven",
+  "parts": [
+   {
+    "kind": "paint",
+    "color": "#d5d2cd",
+    "share": 1.0,
+    "lum": 0.6548
+   }
+  ],
+  "partsMaterial": "ceramic_vase_01"
+ },
+ {
+  "id": "ceramic_vase_03",
+  "name": "Tall vase",
+  "cls": "vase",
+  "category": "Decor",
+  "place": "surface",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.112,
+   0.414,
+   0.112
+  ],
+  "source": "polyhaven",
+  "parts": [
+   {
+    "kind": "metal",
+    "color": "#dcd3ce",
+    "share": 0.781,
+    "lum": 0.6686
+   },
+   {
+    "kind": "metal",
+    "color": "#d7bfb4",
+    "share": 0.158,
+    "lum": 0.5589
+   },
+   {
+    "kind": "metal",
+    "color": "#cca293",
+    "share": 0.061,
+    "lum": 0.4188
+   }
+  ],
+  "partsMaterial": "ceramic_vase_03"
+ },
+ {
+  "id": "book_encyclopedia_set_01",
+  "name": "Row of books",
+  "cls": "books",
+  "category": "Decor",
+  "place": "surface",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.551,
+   0.237,
+   0.163
+  ],
+  "source": "polyhaven",
+  "parts": [
+   {
+    "kind": "wood",
+    "color": "#38231d",
+    "share": 0.744,
+    "lum": 0.0175
+   },
+   {
+    "kind": "wood",
+    "color": "#624231",
+    "share": 0.256,
+    "lum": 0.0715
+   }
+  ],
+  "partsMaterial": "book_encyclopedia_set_01_cover"
+ },
+ {
+  "id": "potted_plant_01",
+  "name": "Tall plant",
+  "cls": "plant",
+  "category": "Plants",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.587,
+   1.35,
+   0.634
+  ],
+  "source": "polyhaven",
+  "parts": [
+   {
+    "kind": "metal",
+    "color": "#a76946",
+    "share": 0.774,
+    "lum": 0.1926
+   },
+   {
+    "kind": "wood",
+    "color": "#928a66",
+    "share": 0.124,
+    "lum": 0.2604
+   },
+   {
+    "kind": "metal",
+    "color": "#605547",
+    "share": 0.102,
+    "lum": 0.0962
+   }
+  ],
+  "partsMaterial": "potted_plant_01_pot"
+ },
+ {
+  "id": "potted_plant_02",
+  "name": "Leafy plant",
+  "cls": "plant",
+  "category": "Plants",
+  "place": "floor",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.701,
+   0.841,
+   0.657
+  ],
+  "source": "polyhaven",
+  "parts": [
+   {
+    "kind": "metal",
+    "color": "#ad6e4a",
+    "share": 0.916,
+    "lum": 0.2083
+   },
+   {
+    "kind": "metal",
+    "color": "#474036",
+    "share": 0.084,
+    "lum": 0.0516
+   }
+  ],
+  "partsMaterial": "potted_plant_02_pot"
+ },
+ {
+  "id": "potted_plant_04",
+  "name": "Small succulent",
+  "cls": "plant",
+  "category": "Plants",
+  "place": "surface",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   0.168,
+   0.267,
+   0.185
+  ],
+  "source": "polyhaven",
+  "parts": [
+   {
+    "kind": "paint",
+    "color": "#cbc5bd",
+    "share": 0.473,
+    "lum": 0.5759
+   },
+   {
+    "kind": "paint",
+    "color": "#6c6544",
+    "share": 0.307,
+    "lum": 0.1352
+   },
+   {
+    "kind": "paint",
+    "color": "#2c270f",
+    "share": 0.22,
+    "lum": 0.0192
+   }
+  ],
+  "partsMaterial": "potted_plant_04"
+ },
+ {
+  "id": "B07B4SDLJM",
+  "name": "Jute rug, large",
+  "cls": "rug",
+  "category": "Rugs",
+  "place": "rug",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   3.202,
+   0.045,
+   2.434
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "fabric",
+    "color": "#b5a496",
+    "share": 0.611,
+    "lum": 0.3991
+   },
+   {
+    "kind": "fabric",
+    "color": "#d4c7bc",
+    "share": 0.389,
+    "lum": 0.5953
+   }
+  ],
+  "partsMaterial": "\"B07B4SDLJM_TRB_MDL_MR\""
+ },
+ {
+  "id": "B0719STM26",
+  "name": "Round braided rug",
+  "cls": "rug",
+  "category": "Rugs",
+  "place": "rug",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   2.443,
+   0.015,
+   2.444
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "fabric",
+    "color": "#c0a079",
+    "share": 0.51,
+    "lum": 0.3858
+   },
+   {
+    "kind": "wood",
+    "color": "#ae885f",
+    "share": 0.385,
+    "lum": 0.2807
+   },
+   {
+    "kind": "fabric",
+    "color": "#d3c9b4",
+    "share": 0.105,
+    "lum": 0.6003
+   }
+  ],
+  "partsMaterial": "\"ANNIHIOAHFCAAAAAFMBAAAAAAAAAOFLCIIPC\""
+ },
+ {
+  "id": "B07HSHPHW2",
+  "name": "Grey wool rug",
+  "cls": "rug",
+  "category": "Rugs",
+  "place": "rug",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   2.442,
+   0.01,
+   1.546
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "fabric",
+    "color": "#d9d0c3",
+    "share": 0.446,
+    "lum": 0.6459
+   },
+   {
+    "kind": "fabric",
+    "color": "#c7bdb2",
+    "share": 0.307,
+    "lum": 0.5272
+   },
+   {
+    "kind": "wood",
+    "color": "#3d3731",
+    "share": 0.248,
+    "lum": 0.0356
+   }
+  ],
+  "partsMaterial": "\"B07HSHPHW2_TRB_MDL_MR\""
+ },
+ {
+  "id": "B07121ZWNC",
+  "name": "Wave rug",
+  "cls": "rug",
+  "category": "Rugs",
+  "place": "rug",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   2.144,
+   0.015,
+   1.543
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "fabric",
+    "color": "#909896",
+    "share": 0.657,
+    "lum": 0.3148
+   },
+   {
+    "kind": "fabric",
+    "color": "#75797d",
+    "share": 0.343,
+    "lum": 0.1935
+   }
+  ],
+  "partsMaterial": "\"AGGGLJGJKICAAAAAFMBAAAAAAAAACANBAOMK\""
+ },
+ {
+  "id": "B075Z8GZ45",
+  "name": "Chevron rug",
+  "cls": "rug",
+  "category": "Rugs",
+  "place": "rug",
+  "yaw": 0,
+  "scale": 1.0,
+  "size": [
+   2.244,
+   0.017,
+   1.532
+  ],
+  "source": "abo",
+  "parts": [
+   {
+    "kind": "fabric",
+    "color": "#d8cfbb",
+    "share": 0.557,
+    "lum": 0.6374
+   },
+   {
+    "kind": "fabric",
+    "color": "#808290",
+    "share": 0.224,
+    "lum": 0.2297
+   },
+   {
+    "kind": "fabric",
+    "color": "#9597a3",
+    "share": 0.219,
+    "lum": 0.319
+   }
+  ],
+  "partsMaterial": "\"AEOFLALCKDCAAAAAFMBAAAAAAAAABEDDPMHF\""
+ }
+]

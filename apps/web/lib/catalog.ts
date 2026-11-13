@@ -1,96 +1,79 @@
+import generated from "./catalog.generated.json";
 import type { Vec3 } from "./types";
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 export const asset = (path: string) => `${BASE}${path}`;
 
-export type Category = "Beds" | "Tables" | "Seating" | "Storage" | "Plants" | "Lighting" | "Decor" | "Rugs";
+export type Category = "Beds" | "Tables" | "Seating" | "Storage" | "Lighting" | "Decor" | "Plants" | "Rugs";
+export type Placement = "floor" | "surface" | "wall" | "rug";
+export type PartKind = "fabric" | "wood" | "metal" | "paint";
+
+/** A region of a model's colour texture that can be recoloured on its own. Found automatically (tools/build_catalog.py). */
+export interface Part { kind: PartKind; color: string; share: number; lum: number }
 
 export interface CatalogItem {
-  id: string;
-  name: string;
-  category: Category;
-  /** "model": a CC0 scanned or modelled asset from Poly Haven. "built": generated in code from dimensions. */
-  kind: "model" | "built";
-  /** Turn applied so that every item's front faces +Z before the user rotates it. */
-  yaw?: number;
-  /** Uniform scale for models that ship smaller than the real thing. */
-  scale?: number;
-  /** Built items: width, height, depth in metres. Model sizes are read from the file when it loads. */
-  size?: Vec3;
-  /** Built items that take a wood finish. */
-  wood?: boolean;
-  /** Default tint for fabric on built items. */
-  fabric?: string;
-  /** Sits on other furniture by default (lamps, vases), so new ones are added at table height. */
-  tabletop?: boolean;
-  /** Hangs on a wall. */
-  wall?: boolean;
+  id: string; name: string;
+  /** what the piece is, in the vocabulary the scan detector also uses */
+  cls: string;
+  category: Category; place: Placement;
+  /** turn and scale baked in so every piece faces +Z at its real size */
+  yaw: number; scale: number;
+  /** width, height, depth in metres as shipped */
+  size: Vec3;
+  /** height of the top surface things can stand on, if any */
+  surface?: number;
+  source: "abo" | "polyhaven";
+  parts: Part[]; partsMaterial: string | null;
 }
 
-export const CATALOG: CatalogItem[] = [
-  { id: "bed_double", name: "Platform bed, double", category: "Beds", kind: "built", size: [1.5, 0.95, 2.1], wood: true, fabric: "#f4f1ea" },
-  { id: "bed_queen", name: "Platform bed, queen", category: "Beds", kind: "built", size: [1.7, 0.95, 2.15], wood: true, fabric: "#f4f1ea" },
-  { id: "bed_single", name: "Platform bed, single", category: "Beds", kind: "built", size: [1.0, 0.95, 2.05], wood: true, fabric: "#f4f1ea" },
-  { id: "desk", name: "Writing desk", category: "Tables", kind: "built", size: [1.3, 0.74, 0.62], wood: true },
-  { id: "side_table_01", name: "Side table", category: "Tables", kind: "model" },
-  { id: "coffee_table_round_01", name: "Round coffee table", category: "Tables", kind: "model" },
-  { id: "chair", name: "Desk chair", category: "Seating", kind: "built", size: [0.46, 0.8, 0.5], wood: true, fabric: "#d9cdb8" },
-  { id: "modern_arm_chair_01", name: "Armchair", category: "Seating", kind: "model" },
-  { id: "mid_century_lounge_chair", name: "Lounge chair", category: "Seating", kind: "model" },
-  { id: "wooden_display_shelves_01", name: "Cube shelves", category: "Storage", kind: "model" },
-  { id: "drawer_cabinet", name: "Open cabinet", category: "Storage", kind: "model" },
-  { id: "modern_wooden_cabinet", name: "Sideboard", category: "Storage", kind: "model" },
-  { id: "steel_frame_shelves_03", name: "Steel frame shelves", category: "Storage", kind: "model" },
-  { id: "wicker_basket_02", name: "Wicker basket", category: "Storage", kind: "model", scale: 1.9 },
-  { id: "potted_plant_01", name: "Tall plant", category: "Plants", kind: "model" },
-  { id: "potted_plant_02", name: "Leafy plant", category: "Plants", kind: "model" },
-  { id: "potted_plant_04", name: "Small succulent", category: "Plants", kind: "model", tabletop: true },
-  { id: "desk_lamp_arm_01", name: "Desk lamp", category: "Lighting", kind: "model", tabletop: true },
-  { id: "ceramic_vase_01", name: "Round vase", category: "Decor", kind: "model", tabletop: true },
-  { id: "ceramic_vase_03", name: "Tall vase", category: "Decor", kind: "model", tabletop: true },
-  { id: "standing_picture_frame_01", name: "Standing frame", category: "Decor", kind: "model", tabletop: true },
-  { id: "print", name: "Framed print", category: "Decor", kind: "built", size: [0.6, 0.8, 0.035], wood: true, fabric: "#a9b8a2", wall: true },
-  { id: "book_encyclopedia_set_01", name: "Row of books", category: "Decor", kind: "model", tabletop: true },
-  { id: "throw_pillows_01", name: "Throw pillows", category: "Decor", kind: "model", tabletop: true },
-  { id: "rug_large", name: "Wool rug, large", category: "Rugs", kind: "built", size: [2.4, 0.018, 1.7], fabric: "#b3bfab" },
-  { id: "rug_small", name: "Wool rug, small", category: "Rugs", kind: "built", size: [1.6, 0.018, 1.0], fabric: "#b3bfab" },
-];
-
+export const CATALOG = (generated as CatalogItem[]).map((i) => ({
+  ...i,
+  // only a bed's "top" is below its highest point (the mattress, under the headboard)
+  surface: i.surface === undefined ? undefined : i.cls === "bed" ? i.surface : i.size[1],
+}));
 export const ITEM = Object.fromEntries(CATALOG.map((i) => [i.id, i])) as Record<string, CatalogItem>;
-export const CATEGORIES: Category[] = ["Beds", "Tables", "Seating", "Storage", "Plants", "Lighting", "Decor", "Rugs"];
+export const CATEGORIES: Category[] = ["Beds", "Tables", "Seating", "Storage", "Lighting", "Decor", "Plants", "Rugs"];
 export const modelUrl = (id: string) => asset(`/models/${id}.glb`);
+export const maskUrl = (id: string) => asset(`/models/${id}.mask.png`);
+export const thumbUrl = (id: string) => asset(`/thumbs/${id}.webp`);
 
 export const FLOORS = [
-  { id: "wood_floor", name: "Oak boards", repeat: 1.6 },
-  { id: "laminate_floor_02", name: "Pale laminate", repeat: 1.8 },
-  { id: "herringbone_parquet", name: "Herringbone", repeat: 1.4 },
-] as const;
-
-export const WOODS = [
-  { id: "oak_veneer_01", name: "Oak" },
-  { id: "plywood", name: "Birch ply" },
-  { id: "black_oak_veneer", name: "Black oak" },
+  { id: "laminate_floor_02", name: "Pale laminate", repeat: 1.8, color: "#c9a77c" },
+  { id: "wood_floor", name: "Oak boards", repeat: 1.6, color: "#8a5a33" },
+  { id: "herringbone_parquet", name: "Herringbone", repeat: 1.4, color: "#a06a3c" },
 ] as const;
 
 export const WALL_COLORS = [
-  { hex: "#f3efe6", name: "Warm white" },
-  { hex: "#f7f7f4", name: "Gallery white" },
-  { hex: "#e6e2d6", name: "Oat" },
-  { hex: "#dfe5dc", name: "Pale sage" },
-  { hex: "#dbe3ea", name: "Mist blue" },
-  { hex: "#ecd9cf", name: "Blush" },
+  { hex: "#f3efe6", name: "Warm white" }, { hex: "#f7f7f4", name: "Gallery white" }, { hex: "#e6e2d6", name: "Oat" },
+  { hex: "#dfe5dc", name: "Pale sage" }, { hex: "#dbe3ea", name: "Mist blue" }, { hex: "#ecd9cf", name: "Blush" },
+  { hex: "#cfd3d0", name: "Stone grey" }, { hex: "#3f4a47", name: "Deep green" },
 ];
 
-export const TINTS = [
-  { hex: "#f4f1ea", name: "Ivory" },
-  { hex: "#d9cdb8", name: "Sand" },
-  { hex: "#a9b8a2", name: "Sage" },
-  { hex: "#8fa3b5", name: "Dusty blue" },
-  { hex: "#c98f7a", name: "Clay" },
-  { hex: "#e2c56d", name: "Mustard" },
-  { hex: "#55605c", name: "Slate" },
-  { hex: "#2c302e", name: "Charcoal" },
-];
+/** Colour choices, grouped by the material they are meant to look like. Any group can be used on any part. */
+export const PALETTES: Record<PartKind | "leather", { name: string; hex: string }[]> = {
+  fabric: [
+    { name: "White", hex: "#f2efe9" }, { name: "Oatmeal", hex: "#d6cbb8" }, { name: "Light grey", hex: "#b9bab8" }, { name: "Charcoal", hex: "#45484a" },
+    { name: "Sage", hex: "#a3b29b" }, { name: "Dusty blue", hex: "#8499ad" }, { name: "Navy", hex: "#283a55" }, { name: "Blush", hex: "#d9b3a6" },
+    { name: "Clay", hex: "#b9775f" }, { name: "Mustard", hex: "#d1a94c" }, { name: "Forest", hex: "#3d5a4b" },
+  ],
+  leather: [
+    { name: "Cognac", hex: "#9a5b2e" }, { name: "Tan", hex: "#b98556" }, { name: "Chestnut", hex: "#6b3a22" }, { name: "Black", hex: "#1c1b1a" }, { name: "Cream", hex: "#e3d6c1" },
+  ],
+  wood: [
+    { name: "Birch", hex: "#d9c09a" }, { name: "Oak", hex: "#b98f5f" }, { name: "Walnut", hex: "#6b4429" }, { name: "Espresso", hex: "#3a261b" }, { name: "Whitewash", hex: "#e4dccf" }, { name: "Black stain", hex: "#26221f" },
+  ],
+  metal: [
+    { name: "Brass", hex: "#c9a45c" }, { name: "Black", hex: "#222222" }, { name: "Chrome", hex: "#d2d4d6" }, { name: "Copper", hex: "#b87650" }, { name: "White", hex: "#eeeeec" },
+  ],
+  paint: [
+    { name: "White", hex: "#f4f3f0" }, { name: "Cream", hex: "#e9e1d0" }, { name: "Grey", hex: "#9c9e9d" }, { name: "Black", hex: "#262626" }, { name: "Sage", hex: "#a9b8a2" }, { name: "Navy", hex: "#2c3e57" }, { name: "Terracotta", hex: "#b9694c" },
+  ],
+};
 
-/** Size of every item as placed (w, h, d). Built items are known; models report theirs after loading. */
-export const sizes = new Map<string, Vec3>(CATALOG.filter((i) => i.size).map((i) => [i.id, i.size!]));
+/** Detector labels mapped to catalogue classes. Anything not listed is reported but not placed. */
+export const LABEL_TO_CLS: Record<string, string> = {
+  bed: "bed", desk: "desk", table: "desk", chair: "chair", armchair: "armchair", "swivel chair": "chair", sofa: "sofa",
+  "chest of drawers": "dresser", cabinet: "dresser", wardrobe: "wardrobe", bookcase: "bookcase", shelf: "bookcase",
+  lamp: "table_lamp", "floor lamp": "floor_lamp", mirror: "mirror", rug: "rug", ottoman: "ottoman", stool: "ottoman", "coffee table": "table",
+  plant: "plant", nightstand: "nightstand", "side table": "nightstand",
+};

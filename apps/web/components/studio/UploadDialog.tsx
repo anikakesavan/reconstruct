@@ -1,7 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { API, createJob, deleteJob, getHealth, getJob, listJobs, scanFromJob, type Health } from "@/lib/api";
+import { API, createJob, deleteJob, getHealth, getJob, getScene, listJobs, scanFromJob, type Health } from "@/lib/api";
 import { useStudio } from "@/lib/store";
 import type { Job } from "@/lib/types";
 
@@ -12,6 +12,7 @@ const STAGES: [string, string][] = [
   ["scale", "Estimating real-world scale"],
   ["fusion", "Fusing the views into one surface"],
   ["room", "Finding the floor and walls"],
+  ["objects", "Finding furniture, windows and doors"],
 ];
 const GUIDE: [string, string][] = [
   ["Bright, even light.", "Lights on, curtains open. Dark rooms come out muddy."],
@@ -57,7 +58,10 @@ export function UploadDialog({ open, onClose }: { open: boolean; onClose: () => 
       try {
         const job = await getJob(jobId);
         if (stop) return;
-        if (job.status === "done") { openScan(scanFromJob(job)); setPhase({ at: "pick" }); setFiles([]); onClose(); return; }
+        if (job.status === "done") {
+          const scan = scanFromJob(job);
+          openScan(scan, await getScene(scan)); setPhase({ at: "pick" }); setFiles([]); onClose(); return;
+        }
         if (job.status === "failed") { setPhase({ at: "failed", reason: job.error ?? "The reconstruction failed." }); return; }
         setPhase({ at: "working", job });
       } catch {
@@ -164,9 +168,9 @@ export function UploadDialog({ open, onClose }: { open: boolean; onClose: () => 
                   </div>
                 )}
                 <div className="mt-4 flex flex-wrap items-center gap-3">
-                  <button className={`${btn} btn-primary`} disabled={!enough || health === "offline"} onClick={start}>Build 3D scan</button>
+                  <button className={`${btn} btn-primary`} disabled={!enough || health === "offline"} onClick={start}>Rebuild my room</button>
                   <p className="min-w-[200px] flex-1 text-[12px] leading-[1.4] text-ink-soft">
-                    The result is a scan to look at and measure, separate from the sample room. Files go only to the service on this computer{health && health !== "offline" ? ` (${health.device === "cuda" ? "using its graphics card" : "no graphics card, so allow a minute or two"})` : ""}.
+                    You get an editable room with the furniture it could find. Files go only to the reconstruction service{health && health !== "offline" ? ` (${health.device === "cuda" ? "using its graphics card" : "no graphics card, so allow a minute or two"})` : ""}.
                     Originals are deleted once the room is built.
                   </p>
                 </div>
@@ -196,14 +200,14 @@ export function UploadDialog({ open, onClose }: { open: boolean; onClose: () => 
                 </ol>
                 <p className="mt-3 text-[13px] leading-[1.45] text-ink-soft">
                   {phase.job.status === "queued" ? "Waiting for an earlier scan to finish. " : ""}
-                  You can close this and keep working. The scan opens when it is ready.
+                  You can close this and keep working. Your room opens when it is ready.
                 </p>
               </div>
             )}
 
             {phase.at === "failed" && (
               <div className="mt-4" role="alert">
-                <p className="text-[16px] font-semibold">The scan was not built</p>
+                <p className="text-[16px] font-semibold">The room was not built</p>
                 <p className="mt-1 text-[14px] leading-[1.45]">{phase.reason}</p>
                 <button className={`${btn} btn-primary mt-3`} onClick={() => { setPhase({ at: "pick" }); refresh(); }}>Back to your files</button>
               </div>
@@ -218,7 +222,7 @@ export function UploadDialog({ open, onClose }: { open: boolean; onClose: () => 
                       <span className="min-w-0 truncate">{j.title}{j.status === "failed" && <span className="text-ink-soft"> (failed)</span>}</span>
                       <span className="flex shrink-0 gap-3 text-[13px] font-medium">
                         {j.id === currentId ? <span className="text-ink-soft">Open now</span>
-                          : j.status === "done" && <button className="underline" onClick={() => { openScan(scanFromJob(j)); onClose(); }}>Open</button>}
+                          : j.status === "done" && <button className="underline" onClick={() => { const scan = scanFromJob(j); getScene(scan).then((r) => { openScan(scan, r); onClose(); }, () => setPhase({ at: "failed", reason: "That scan could not be opened. It may be from an older version: scan the room again." })); }}>Open</button>}
                         {j.id !== currentId && (j.status === "done" || j.status === "failed") && (
                           <button className="underline" onClick={() => deleteJob(j.id).then(refresh, refresh)}>Delete</button>
                         )}

@@ -7,13 +7,11 @@ import { MeshBVH, acceleratedRaycast } from "three-mesh-bvh";
 import { useStudio } from "@/lib/store";
 
 /**
- * An uploaded scan. Drawn unlit with its captured colours (they already contain the room's real light),
- * and never treated as editable furniture: it is one fused surface, used for looking and measuring.
+ * The raw surface fused from the user's photos, shown half-transparent over the editable room so the two can be compared.
+ * Drawn unlit with its captured colours (they already contain the room's real light).
  */
-export function ScanLayer({ url }: { url: string }) {
+export function ScanLayer({ url, scale = 1 }: { url: string; scale?: number }) {
   const gltf = useGLTF(url);
-  const calibration = useStudio((s) => s.calibration);
-  const ghost = useStudio((s) => s.showRoom);
   const tool = useStudio((s) => s.tool);
 
   const mesh = useMemo(() => {
@@ -37,15 +35,15 @@ export function ScanLayer({ url }: { url: string }) {
 
   useEffect(() => {
     const mat = mesh.material as THREE.MeshBasicMaterial;
-    mat.transparent = ghost; mat.opacity = ghost ? 0.38 : 1; mat.depthWrite = !ghost; mat.needsUpdate = true;
-    // while furnishing a clean room, the ghosted scan must not swallow clicks meant for furniture
-    mesh.raycast = ghost && tool !== "measure" ? () => {} : acceleratedRaycast;
-  }, [mesh, ghost, tool]);
+    mat.transparent = true; mat.opacity = 0.5; mat.depthWrite = false; mat.needsUpdate = true;
+    // the overlay must not swallow clicks meant for furniture
+    mesh.raycast = tool === "measure" ? acceleratedRaycast : () => {};
+  }, [mesh, tool]);
 
   const onClick = (e: ThreeEvent<MouseEvent>) => {
     if (e.delta > 4) return;
     const s = useStudio.getState();
     if (s.tool === "measure") { e.stopPropagation(); s.addMeasurePoint([e.point.x, e.point.y, e.point.z]); }
   };
-  return <primitive object={mesh} scale={calibration} onClick={onClick} />;
+  return <primitive object={mesh} scale={scale} onClick={onClick} />;
 }

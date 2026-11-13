@@ -26,3 +26,5 @@ addict
 evo
 moviepy==1.0.3
 pycolmap
+# furniture, window and door detection (OneFormer)
+transformers>=4.45

@@ -1,11 +1,11 @@
-import type { Job, ScanRef } from "./types";
+import type { Job, ScanRef, ScanResult } from "./types";
 
 /** Where the Python reconstruction service runs. Override with NEXT_PUBLIC_RECONSTRUCT_API. */
-export const API = (process.env.NEXT_PUBLIC_RECONSTRUCT_API ?? "http://localhost:8000").replace(/\/$/, "");
+export const API = (process.env.NEXT_PUBLIC_RECONSTRUCT_API || "http://localhost:8000").replace(/\/$/, "");
 
 export const scanFromJob = (job: Pick<Job, "id" | "title">): ScanRef => ({
   id: job.id, title: job.title,
-  glbUrl: `${API}/reconstructions/${job.id}/scan.glb`, metaUrl: `${API}/reconstructions/${job.id}/room.json`,
+  glbUrl: `${API}/reconstructions/${job.id}/scan.glb`, sceneUrl: `${API}/reconstructions/${job.id}/scene.json`,
 });
 
 export interface Health { ok: boolean; device: string; max_views: number }
@@ -41,3 +41,5 @@ export function createJob(files: File[], title: string, onProgress: (fraction: n
     xhr.send(form);
   });
 }
+
+export const getScene = (scan: ScanRef) => fetch(scan.sceneUrl).then((r) => json<ScanResult>(r));

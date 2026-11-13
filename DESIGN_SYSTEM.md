@@ -33,7 +33,7 @@ Text: optical size 14, width 96, 12.5 to 15 px. Numbers use tabular figures of t
 - Cards (`.panel`): 10 px radius, 1 px `line` border, one soft shadow.
 - Buttons (`.btn`): 7 px radius, 40 px minimum height; `.btn-primary` is solid accent.
 - Swatches are circles; material choices are small image tiles; the selected one gets an accent ring.
-- Selected furniture gets a thin accent wireframe box drawn over everything.
+- Selected furniture gets a thin accent wireframe box and a round turn handle at its front. The frame turns red (`#c2412d`) while a piece is somewhere it cannot stay.
 
 ## Layout
 
@@ -47,7 +47,7 @@ Text: optical size 14, width 96, 12.5 to 15 px. Numbers use tabular figures of t
                          [ Move | Measure | Add furniture ]
 ```
 
-Phones: the view switch wraps under the top row, the Room card starts closed, the selected-piece card becomes a sheet above the toolbar.
+Phones: two rows at the top (name, Room, Scan; then history and views), the Room card starts closed, and the selected-piece card becomes a sheet above the toolbar that can be folded away while dragging.
 
 ## 3D lighting and materials
 

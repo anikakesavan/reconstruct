@@ -23,7 +23,7 @@ def orient_and_fit(vertices, faces, colors, cam_up, cam_centres, speck_fraction=
     """vertices (N,3) in capture frame, faces (M,3), colors (N,3) uint8.
     cam_up: mean camera 'up' direction in the capture frame (gravity prior).
     cam_centres: (K,3) camera positions in the capture frame.
-    Returns (trimesh.Trimesh, envelope dict, diagnostics dict)."""
+    Returns (trimesh.Trimesh, envelope dict, diagnostics dict, 4x4 capture-to-room transform)."""
     V = np.asarray(vertices, np.float64); F = np.asarray(faces)
     cam_up = cam_up / np.linalg.norm(cam_up)
     m = trimesh.Trimesh(V, F, process=False)
@@ -81,13 +81,16 @@ def orient_and_fit(vertices, faces, colors, cam_up, cam_centres, speck_fraction=
     if not floor_found:
         floor_y = float(np.percentile(P[:, 1], 1))
     P[:, 1] -= floor_y; cams[:, 1] -= floor_y
+    M = np.eye(4); M[:3, :3] = R; M[1, 3] = -floor_y
 
     lo, hi = np.percentile(P[:, [0, 2]], 2, axis=0), np.percentile(P[:, [0, 2]], 98, axis=0)
     if (hi - lo)[1] > (hi - lo)[0]:  # long side along X
         P = P[:, [2, 1, 0]] * [1, 1, -1]; cams = cams[:, [2, 1, 0]] * [1, 1, -1]
+        M = np.array([[0, 0, 1, 0], [0, 1, 0, 0], [-1, 0, 0, 0], [0, 0, 0, 1.0]]) @ M
         lo, hi = np.percentile(P[:, [0, 2]], 2, axis=0), np.percentile(P[:, [0, 2]], 98, axis=0)
     centre = (lo + hi) / 2
     P[:, [0, 2]] -= centre; cams[:, [0, 2]] -= centre
+    M[0, 3] -= centre[0]; M[2, 3] -= centre[1]
 
     mesh = trimesh.Trimesh(P, F, process=False)
     tc, FN, FA = mesh.triangles_center, mesh.face_normals, mesh.area_faces
@@ -115,6 +118,11 @@ def orient_and_fit(vertices, faces, colors, cam_up, cam_centres, speck_fraction=
         return out, found
     (x0, x1), fx = wall_pair(0)
     (z0, z1), fz = wall_pair(2)
+    # put the origin midway between the fitted walls, so the editable room and the scan share one frame
+    shift = np.array([(x0 + x1) / 2, 0.0, (z0 + z1) / 2])
+    mesh.vertices = mesh.vertices - shift; cams = cams - shift; M[0, 3] -= shift[0]; M[2, 3] -= shift[2]
+    x0, x1, z0, z1 = x0 - shift[0], x1 - shift[0], z0 - shift[2], z1 - shift[2]
+    P = np.asarray(mesh.vertices)
     ceiling_max = float(np.percentile(P[:, 1], 99.5))
     envelope = {
         "confidence": "estimated",
@@ -129,4 +137,4 @@ def orient_and_fit(vertices, faces, colors, cam_up, cam_centres, speck_fraction=
     diag = {"gravity_refined_from_surfaces": gravity_refined, "wall_direction_found": bool(walls_found),
             "removed_speck_faces": removed, "camera_height_median": float(np.median(cams[:, 1])),
             "camera_positions": cams.round(3).tolist()}
-    return mesh, envelope, diag
+    return mesh, envelope, diag, M

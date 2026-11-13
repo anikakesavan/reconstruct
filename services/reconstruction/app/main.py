@@ -88,7 +88,7 @@ def status(job_id: str):
 
 @app.get("/reconstructions/{job_id}/{name}")
 def asset(job_id: str, name: str):
-    if name not in ("scan.glb", "room.json"):
+    if name not in ("scan.glb", "room.json", "scene.json"):
         raise HTTPException(404, "Not found")
     if _job(job_id)["status"] != "done":
         raise HTTPException(409, "This scan is not ready yet.")

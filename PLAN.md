@@ -3,30 +3,24 @@
 Update this file at the end of every session.
 
 ## Done
-- **Design system** (twice: the second, bright version is current; see DESIGN_SYSTEM.md).
-- **Sample room**: designed bedroom from CC0 models and built pieces, every part a separate object.
-- **Furniture editor**: select, drag with 5 cm snap and wall limits, turn in 15 degree steps, recolour, wood finish, swap,
-  duplicate, remove, add from a 25-piece catalogue, height off the floor, undo / redo, saved in the browser.
-- **Room editing**: wall colour, three floors, width / depth / height.
-- **Views and tools**: orbit, plan, walk; measure.
-- **Lighting and materials**: HDR environment, daylight with soft shadows, PBR materials, tone mapping.
-- **Scanning**: upload photos or video, reconstruction service, progress, capture-quality report, scale calibration,
-  clean room sized from a scan with the scan as a guide.
-- **Deployment**: GitHub Pages, rebuilt on every push.
+- **Scan to editable room**: depth and poses, room fit, furniture / window / door detection lifted to 3D, catalogue matching, confidence per item, raw-scan overlay, scale calibration.
+- **Catalogue**: 77 pieces (60 ABO product models, 12 Poly Haven), built by script with sizes, top surfaces and recolourable parts; thumbnails rendered from the models.
+- **Editor**: select, drag (mouse and touch), rotate handle, typed resize, swap, duplicate, remove, put back, add; collisions, wall snapping, parent-child; per-part recolouring; undo / redo.
+- **Room**: wall colour (any), three floors, size, windows and doors on any wall.
+- **Saving**: autosave, named designs in the browser, download as a file. **Before and after** slider.
+- **Views**: orbit, plan, walk; measure. Phone layout with a foldable editing sheet.
+- **Deployment**: GitHub Pages on every push; container recipe for hosting the scan service (untested).
 
 ## Next (in order)
-1. **Collisions**: stop pieces overlapping each other; let tabletop items snap onto the surface under them; let wall items snap to walls.
-2. **Free rotation and resize handles** in the viewport, plus multi-select.
-3. **Bigger catalogue**: wardrobe, sofa, floor lamp, curtains, bedside lamp, more beds. Needs more CC0 sources or more built pieces.
-4. **Named saved designs** and side-by-side comparison (browser storage first, then Supabase).
-5. **AI assistant** that emits the same edit operations the UI uses, shown as a reviewable, undoable list.
-6. **Scan understanding**: automatic furniture, door and window detection (see ARCHITECTURE.md, "Hybrid approach"); non-rectangular rooms.
-7. Style presets, moodboards, budget and shopping list, before / after slider, Design Battle.
-8. Hosted reconstruction (GPU worker, storage, accounts).
+1. **Host the scan service** (see `services/reconstruction/HOSTING.md`): build the container, deploy, set `RECONSTRUCT_API`. Needs an account from the owner.
+2. **Check accuracy against a tape measure** on two or three real rooms and record the errors; tune the detection thresholds from that.
+3. **Detection quality**: resolve overlaps between neighbouring detections, use more views (chunked inference), handle non-rectangular rooms, place wall art, curtains and TVs (need catalogue classes).
+4. **Match appearance better**: choose the catalogue piece by shape and colour, not size alone; estimate colour from well-lit pixels only.
+5. **Materials**: swap texture sets (weaves, wood species, rug patterns), not only colour; per-part roughness and metalness.
+6. **Editor**: drag-to-resize handles, multi-select, free rotation, open a downloaded design file, ambient occlusion pass.
+7. AI assistant emitting the same edit operations; style presets; budget and shopping list; shareable links.
 
-## Known gaps to close along the way
-- Test a real, normal-length phone video and iPhone HEIC photos.
-- Try the GPU path of the pipeline (resolution choices for CUDA are untested).
-- Run `setup.sh` on a clean machine.
-- Measure frame rate on low-end phones.
-- Lights you can add and move (the desk lamp is decoration only).
+## Known gaps
+- No normal-length phone video, iPhone HEIC, or graphics-card run has been tested.
+- `setup.sh` and the Dockerfile have not been run on a clean machine.
+- Frame rate on low-end phones is unmeasured.

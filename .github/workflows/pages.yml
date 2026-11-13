@@ -26,6 +26,8 @@ jobs:
         working-directory: apps/web
         env:
           NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
+          # set a repository variable RECONSTRUCT_API to the hosted service URL; empty means "on this computer"
+          NEXT_PUBLIC_RECONSTRUCT_API: ${{ vars.RECONSTRUCT_API }}
       - run: touch apps/web/out/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:
