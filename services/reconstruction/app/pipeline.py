@@ -20,6 +20,7 @@ import numpy as np
 from . import frames as frames_mod
 from .roomfit import orient_and_fit
 from .fuse import fuse
+from .quality import assess
 
 ROOT = Path(__file__).resolve().parents[1]
 _DA3_SRC = Path(os.environ.get("RECONSTRUCT_DA3_SRC", ROOT / "third_party" / "Depth-Anything-3" / "src"))
@@ -29,7 +30,7 @@ if _DA3_SRC.is_dir() and str(_DA3_SRC) not in sys.path:
 GEOMETRY_MODEL = os.environ.get("RECONSTRUCT_GEOMETRY_MODEL", "depth-anything/DA3-BASE")
 METRIC_MODEL = os.environ.get("RECONSTRUCT_METRIC_MODEL", "depth-anything/DA3METRIC-LARGE")  # "" disables
 MAX_VIEWS = int(os.environ.get("RECONSTRUCT_MAX_VIEWS", "16"))
-MAX_FACES = 400_000
+MAX_FACES = 600_000
 _models: dict = {}
 
 
@@ -54,6 +55,13 @@ def _model(name: str):
     return _models[name]
 
 
+def _resolution(n_views: int) -> int:
+    """Depth resolution per view. Memory grows with views x pixels, so fewer views can afford more detail."""
+    if _device() == "cuda":
+        return 756 if n_views <= 16 else 644
+    return 644 if n_views <= 10 else 504
+
+
 def _mask(depth, conf, conf_floor):
     """Drop low-confidence pixels and depth discontinuities (they smear into fins when fused)."""
     import cv2
@@ -76,11 +84,14 @@ def _metric_scale(paths, depth, masks, K, log):
         for i in idx:
             with torch.inference_mode():
                 pred = model.inference([str(paths[i])])
-            net = pred.depth[0]
-            if net.shape != depth[i].shape:
-                continue
-            focal = (K[i][0, 0] + K[i][1, 1]) / 2
+            import cv2
+            net = np.asarray(pred.depth[0], np.float32)
+            h, w = depth[i].shape
+            # K belongs to the geometry pass; rescale its focal length to the metric pass's image size
+            focal = (K[i][0, 0] + K[i][1, 1]) / 2 * (net.shape[1] / w)
             metric = focal * net / 300.0  # documented conversion for DA3METRIC
+            if metric.shape != (h, w):
+                metric = cv2.resize(metric, (w, h), interpolation=cv2.INTER_LINEAR)
             m = masks[i] & (metric > 0.1)
             if m.sum() > 500:
                 ratios.append(float(np.median(metric[m] / depth[i][m])))
@@ -97,7 +108,9 @@ def _metric_scale(paths, depth, masks, K, log):
 def reconstruct(upload_dir: Path, out_dir: Path, progress: Callable[[str, float, str], None] = lambda *a: None,
                 title: str = "Uploaded room") -> dict:
     import torch
-    t0 = time.time(); notes: list[str] = []
+    t0 = time.time(); notes: list[str] = []; timing: dict[str, float] = {}
+    def lap(name, since):
+        timing[name] = round(time.time() - since, 1); return time.time()
     log = notes.append
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -112,7 +125,8 @@ def reconstruct(upload_dir: Path, out_dir: Path, progress: Callable[[str, float,
     progress("geometry", 0.15, f"Working out depth and camera positions for {len(paths)} views")
     model = _model(GEOMETRY_MODEL)
     with torch.inference_mode():
-        pred = model.inference([str(p) for p in paths])
+        pred = model.inference([str(p) for p in paths], process_res=_resolution(len(paths)))
+    t1 = lap("geometry_s", t0)
     depth = np.asarray(pred.depth, np.float32); conf = np.asarray(pred.conf, np.float32)
     K = np.asarray(pred.intrinsics, np.float64); ext = np.asarray(pred.extrinsics, np.float64)
     rgb = np.asarray(pred.processed_images)
@@ -132,6 +146,7 @@ def reconstruct(upload_dir: Path, out_dir: Path, progress: Callable[[str, float,
         scale = {"confidence": "uncalibrated", "method": "Assumed surfaces are about 2 m from the camera",
                  "metres_per_unit": s, "disagreement_between_views": None}
 
+    t1 = lap("scale_s", t1)
     progress("fusion", 0.65, "Fusing the views into one surface")
     centres, ups, w2cs, metric = [], [], [], []
     for i in range(n):
@@ -148,11 +163,13 @@ def reconstruct(upload_dir: Path, out_dir: Path, progress: Callable[[str, float,
         V2, F = fast_simplification.simplify(V.astype(np.float32), F.astype(np.int32), target_reduction=1 - MAX_FACES / raw_faces)
         C = C[cKDTree(V).query(V2)[1]]; V = V2.astype(np.float64)
 
+    t1 = lap("fusion_s", t1)
     progress("room", 0.85, "Finding the floor and walls")
     room_mesh, envelope, diag = orient_and_fit(V, F, C, np.mean(ups, axis=0), np.array(centres))
     room_mesh.export(out_dir / "scan.glb")
 
     coverage = float(np.mean([m.mean() for m in masks]))
+    quality = assess(got["stats"], n, coverage, np.array(centres), scale, envelope)
     room = {
         "source": {"kind": "upload", "title": title,
                    "detail": " and ".join(
@@ -160,12 +177,13 @@ def reconstruct(upload_dir: Path, out_dir: Path, progress: Callable[[str, float,
                    "license": None, "url": None},
         "units": "metres", "up": "Y",
         "scale": scale,
+        "quality": quality,
         "processing": {
-            "pipeline": f"{GEOMETRY_MODEL} + TSDF fusion ({voxel * 100:.0f} cm voxels)",
+            "pipeline": f"{GEOMETRY_MODEL} + TSDF fusion ({voxel * 100:.1f} cm voxels)",
             "views": n, "view_resolution": [int(w), int(h)], "device": _device(),
             "faces_before_reduction": int(raw_faces), "faces": int(len(room_mesh.faces)),
             "vertices": int(len(room_mesh.vertices)), "pixels_kept": coverage,
-            "seconds": round(time.time() - t0, 1), "skipped_files": got["skipped"], "notes": notes, **diag,
+            "seconds": round(time.time() - t0, 1), "timing": timing, "skipped_files": got["skipped"], "notes": notes, **diag,
         },
         "envelope": envelope,
         "bounds": {"min": room_mesh.bounds[0].tolist(), "max": room_mesh.bounds[1].tolist()},

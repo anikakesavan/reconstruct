@@ -13,10 +13,10 @@ const right = new THREE.Vector3();
 /** First-person walk: drag to look, WASD / arrows / touch pad to move. Stays inside the estimated walls. */
 function Walk() {
   const { camera, gl } = useThree();
-  const look = useRef({ yaw: Math.PI, pitch: -0.05 });
+  const look = useRef({ yaw: 0.5, pitch: -0.08 });
 
   useEffect(() => {
-    camera.position.set(0, EYE, 0);
+    camera.position.set(0.6, EYE, 1.0);
     const el = gl.domElement;
     let last: { x: number; y: number } | null = null;
     const down = (e: PointerEvent) => { last = { x: e.clientX, y: e.clientY }; el.setPointerCapture(e.pointerId); };
@@ -52,11 +52,11 @@ function Walk() {
     right.set(Math.cos(yaw), 0, -Math.sin(yaw));
     const step = Math.min(dt, 0.1) * SPEED;
     camera.position.addScaledVector(forward, walkInput.forward * step).addScaledVector(right, walkInput.strafe * step);
-    const w = useStudio.getState().room?.envelope.walls;
-    if (w) {
-      camera.position.x = THREE.MathUtils.clamp(camera.position.x, w.x_min + 0.25, w.x_max - 0.25);
-      camera.position.z = THREE.MathUtils.clamp(camera.position.z, w.z_min + 0.25, w.z_max - 0.25);
-    }
+    const st = useStudio.getState();
+    const hx = (st.showRoom ? st.room.width : (st.scanMeta?.envelope.width_m ?? 4) * st.calibration) / 2 - 0.3;
+    const hz = (st.showRoom ? st.room.depth : (st.scanMeta?.envelope.depth_m ?? 4) * st.calibration) / 2 - 0.3;
+    camera.position.x = THREE.MathUtils.clamp(camera.position.x, -hx, hx);
+    camera.position.z = THREE.MathUtils.clamp(camera.position.z, -hz, hz);
     camera.position.y = EYE;
   });
   return null;
@@ -66,15 +66,17 @@ export function CameraRig() {
   const view = useStudio((s) => s.view);
   const dragging = useStudio((s) => s.dragging);
   const { camera, size } = useThree();
-  // Frame the room whatever its size: the tuned positions below were set for a 5.6 m room.
-  const span = useStudio((s) => (s.room ? Math.max(s.room.envelope.width_m, s.room.envelope.depth_m, 2) : 5.6));
+  // Frame whatever is on show: the clean room, or a raw scan before a room has been made from it.
+  const span = useStudio((s) => {
+    if (s.showRoom) return Math.max(s.room.width, s.room.depth);
+    return s.scanMeta ? Math.max(s.scanMeta.envelope.width_m, s.scanMeta.envelope.depth_m, 2) * s.calibration : 4.6;
+  });
   const f = span / 5.6;
-
   useEffect(() => {
     const cam = camera as THREE.PerspectiveCamera;
     const portrait = size.height > size.width;
-    if (view === "orbit") { cam.fov = 42; cam.position.set(...((portrait ? [8.6, 10.2, 11] : [5.2, 6.2, 6.6]).map((n) => n * f)) as [number, number, number]); }
-    if (view === "plan") { cam.fov = 28; cam.position.set(0, (portrait ? 27 : 13.5) * f, 0.001); }
+    if (view === "orbit") { cam.fov = 34; cam.position.set(...((portrait ? [12.5, 13.5, 15.8] : [8.4, 7.5, 9.7]).map((n) => n * f)) as [number, number, number]); }
+    if (view === "plan") { cam.fov = 28; cam.position.set(0, (portrait ? 34 : 17) * f, 0.001); }
     if (view === "walk") cam.fov = 68;
     cam.updateProjectionMatrix();
     // Framing is intentionally reset only when the mode changes, not on every resize.
@@ -87,7 +89,7 @@ export function CameraRig() {
       key={view}
       makeDefault
       enabled={!dragging}
-      target={[0, view === "plan" ? 0 : 0.9, 0]}
+      target={[0, view === "plan" ? 0 : 0.55, 0]}
       enableRotate={view === "orbit"}
       enableDamping dampingFactor={0.12}
       minDistance={1} maxDistance={30 * Math.max(1, f)}

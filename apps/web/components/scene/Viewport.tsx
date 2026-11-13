@@ -1,53 +1,65 @@
 "use client";
-import { Suspense, useRef } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Grid } from "@react-three/drei";
-import { ScanMesh } from "./ScanMesh";
-import { Volumes } from "./Volumes";
+import { Suspense } from "react";
+import { Canvas } from "@react-three/fiber";
+import { Environment } from "@react-three/drei";
+import * as THREE from "three";
+import { asset } from "@/lib/catalog";
+import { useStudio } from "@/lib/store";
+import { Room } from "./Room";
+import { Furniture } from "./Furniture";
+import { ScanLayer } from "./ScanLayer";
 import { Annotations } from "./Annotations";
 import { CameraRig } from "./CameraRig";
-import { useStudio } from "@/lib/store";
 
-function Stats() {
-  const gl = useThree((s) => s.gl);
-  const acc = useRef({ t: 0, n: 0 });
-  useFrame((_, dt) => {
-    acc.current.t += dt; acc.current.n += 1;
-    if (acc.current.t >= 0.5) {
-      useStudio.getState().setStats(Math.round(acc.current.n / acc.current.t), gl.info.render.triangles);
-      acc.current = { t: 0, n: 0 };
-    }
-  });
-  return null;
+export const BACKDROP = "#e2e5e1";
+
+/**
+ * Lighting model: an HDR studio environment gives soft, even ambient light and reflections;
+ * one directional "sun" on the window side gives direction and soft shadows.
+ * Output is sRGB with ACES filmic tone mapping (the React Three Fiber defaults), exposure 1.
+ */
+function Lights() {
+  const room = useStudio((s) => s.room);
+  const reach = Math.max(room.width, room.depth) * 0.9 + 1;
+  return (
+    <>
+      <Environment files={asset("/env/studio.hdr")} environmentIntensity={0.75} />
+      <hemisphereLight args={["#ffffff", "#e4dfd4", 0.7]} />
+      <directionalLight
+        position={[2.2, 6.5, -5.5]} intensity={1.7} color="#fff3e0" castShadow
+        shadow-mapSize={[2048, 2048]} shadow-bias={-0.0003} shadow-normalBias={0.03} shadow-radius={5}
+        shadow-camera-left={-reach} shadow-camera-right={reach} shadow-camera-top={reach} shadow-camera-bottom={-reach}
+        shadow-camera-near={0.5} shadow-camera-far={22}
+      />
+    </>
+  );
 }
 
 export default function Viewport() {
-  const view = useStudio((s) => s.view);
   const scan = useStudio((s) => s.scan);
+  const showScan = useStudio((s) => s.showScan);
+  const showRoom = useStudio((s) => s.showRoom);
+  const walking = useStudio((s) => s.view === "walk");
   return (
     <Canvas
-      camera={{ position: [5.2, 6.2, 6.6], fov: 42, near: 0.05, far: 80 }}
+      // draw only when something changes; walking needs a continuous loop
+      frameloop={walking ? "always" : "demand"}
+      shadows={{ type: THREE.VSMShadowMap }}
+      camera={{ position: [6.9, 6.2, 8.0], fov: 34, near: 0.05, far: 90 }}
       dpr={[1, 2]}
       gl={{ antialias: true, powerPreference: "high-performance" }}
       onPointerMissed={() => useStudio.getState().select(null)}
       style={{ touchAction: "none" }}
     >
-      <color attach="background" args={["#1e4d43"]} />
-      {/* The cutting mat: 0.5 m cells, 1 m sections. Sits just under the scanned floor. */}
-      {view !== "walk" && (
-        <Grid
-          position={[0, -0.06, 0]} infiniteGrid cellSize={0.5} sectionSize={1}
-          cellColor="#4f8676" sectionColor="#8fc2b2" cellThickness={0.6} sectionThickness={1}
-          fadeDistance={34} fadeStrength={1.6}
-        />
-      )}
+      <color attach="background" args={[BACKDROP]} />
+      <Lights />
       <Suspense fallback={null}>
-        <ScanMesh key={scan.id} url={scan.glbUrl} />
+        {showRoom && <Room />}
+        {showRoom && <Furniture />}
+        {scan && showScan && <ScanLayer key={scan.id} url={scan.glbUrl} />}
       </Suspense>
-      <Volumes />
       <Annotations />
       <CameraRig />
-      <Stats />
     </Canvas>
   );
 }

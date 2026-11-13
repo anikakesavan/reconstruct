@@ -27,6 +27,12 @@ def _sharpness(bgr) -> float:
     return float(cv2.Laplacian(g, cv2.CV_64F).var())
 
 
+def measure(path: Path) -> dict:
+    """Sharpness (variance of the Laplacian at 320x240) and mean brightness (0 to 255) of a saved frame."""
+    bgr = cv2.imread(str(path))
+    return {"sharpness": _sharpness(bgr), "brightness": float(cv2.cvtColor(bgr, cv2.COLOR_BGR2GRAY).mean())}
+
+
 def _video_frames(path: Path, want: int):
     """Split the video into `want` equal windows and keep the sharpest sampled frame of each."""
     cap = cv2.VideoCapture(str(path))
@@ -79,4 +85,5 @@ def collect(upload_dir: Path, out_dir: Path, max_views: int) -> dict:
             dst = out_dir / f"{len(frames):04d}.jpg"
             _save(Image.fromarray(cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)), dst); frames.append(dst)
         remaining -= len(got)
-    return {"frames": frames, "photos": len(photos), "videos": len(videos), "skipped": skipped}
+    return {"frames": frames, "photos": len(photos), "videos": len(videos), "skipped": skipped,
+            "stats": [measure(f) for f in frames]}

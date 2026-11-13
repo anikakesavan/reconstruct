@@ -13,7 +13,7 @@ const KEYS: { label: string; aria: string; axis: Axis; value: number; cell: stri
 export function WalkPad() {
   return (
     <div className="absolute bottom-[92px] right-3 z-10 sm:bottom-6 sm:right-6">
-      <p className="mb-1 hidden text-right text-[12px] text-mat-line sm:block">Drag to look. W A S D or these keys to walk.</p>
+      <p className="mb-1 hidden text-right text-[12px] text-ink-soft sm:block">Drag to look. W A S D or these keys to walk.</p>
       <div className="ml-auto grid w-max grid-cols-3 grid-rows-2 gap-1">
         {KEYS.map((k) => (
           <button
@@ -21,7 +21,7 @@ export function WalkPad() {
             onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); walkInput[k.axis] = k.value; }}
             onPointerUp={() => { walkInput[k.axis] = 0; }} onPointerCancel={() => { walkInput[k.axis] = 0; }}
             onContextMenu={(e) => e.preventDefault()}
-            className={`board h-12 w-12 touch-none text-[18px] active:bg-tape ${k.cell}`}
+            className={`panel h-12 w-12 touch-none text-[18px] active:bg-accent-wash ${k.cell}`}
           >
             {k.label}
           </button>

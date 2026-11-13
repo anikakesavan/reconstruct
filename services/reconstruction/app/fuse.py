@@ -9,7 +9,7 @@ from __future__ import annotations
 import numpy as np
 from skimage import measure
 
-MAX_VOXELS = 14_000_000
+MAX_VOXELS = 30_000_000
 
 
 def _unproject(depth, mask, K, c2w, step=6):
@@ -20,7 +20,7 @@ def _unproject(depth, mask, K, c2w, step=6):
     return np.stack([x, y, z], 1) @ c2w[:3, :3].T + c2w[:3, 3]
 
 
-def fuse(depths, masks, colors, Ks, w2cs, min_voxel=0.02):
+def fuse(depths, masks, colors, Ks, w2cs, min_voxel=0.012):
     """depths[i] (H,W) metres, masks[i] bool, colors[i] (H,W,3) uint8, Ks[i] 3x3, w2cs[i] 4x4 (OpenCV).
     Returns vertices (N,3), faces (M,3), vertex colours (N,3) uint8, voxel size."""
     n = len(depths); h, w = depths[0].shape

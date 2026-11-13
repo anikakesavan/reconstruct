@@ -1,111 +1,96 @@
 # Architecture
 
-Last updated after the first slice of Phase 5 (upload and reconstruct).
+Last updated after the editor rebuild (designed sample room, furniture editing, scan as a guide layer).
 
 ```
 reconstruct/
-├─ apps/web/                      Next.js 16 (App Router), React 19, TypeScript, Tailwind 4
-│  ├─ app/                        layout, global tokens (globals.css), single page
-│  ├─ components/scene/           everything inside the WebGL canvas (React Three Fiber)
-│  │  ├─ Viewport.tsx             Canvas, cutting-mat grid, frame stats
-│  │  ├─ ScanMesh.tsx             loads the scan GLB, colour-space fix, BVH raycasting, click routing
-│  │  ├─ Volumes.tsx              block-out boxes: select, drag on floor plane, snap
-│  │  ├─ Annotations.tsx          measure line, inspect pin, labels
-│  │  └─ CameraRig.tsx            orbit / plan (OrbitControls) and walk (custom controller)
-│  ├─ components/studio/          DOM chrome around the viewport
-│  │  ├─ Studio.tsx               shell, keyboard shortcuts, loading and error states
-│  │  ├─ TopBar, ToolRail, RoomSheet, Inspector, WalkPad
-│  │  └─ UploadDialog.tsx         pick files, upload, live stages, list / open / delete scans
-│  ├─ lib/store.ts                single Zustand store: current scan, calibration, tools, volumes
-│  ├─ lib/api.ts                  client for the reconstruction service
-│  ├─ lib/types.ts                RoomMeta, Volume, Confidence ("measured" | "estimated")
-│  └─ public/scans/<id>/          scan.glb + room.json for each prepared scan
-├─ services/reconstruction/       Python
-│  ├─ app/main.py                 FastAPI: upload, status, assets, delete (see file header)
-│  ├─ app/jobs.py                 one-at-a-time job queue; each job is a folder under data/jobs/
-│  ├─ app/pipeline.py             the five stages below
-│  ├─ app/frames.py               EXIF rotation, HEIC, sharpest-frame sampling from video
-│  ├─ app/fuse.py                 NumPy TSDF fusion + marching cubes
-│  ├─ app/roomfit.py              gravity, wall direction, floor and wall planes
-│  ├─ scripts/setup.sh            installs packages, clones Depth Anything 3 at a pinned commit
-│  └─ scripts/prepare_demo_scan.py  offline: raw Redwood scan -> web-ready GLB + room.json
-└─ tests/smoke.py                 Playwright script that drives the real UI and saves screenshots
+├─ apps/web/                        Next.js 16 static export, React 19, TypeScript, Tailwind 4, React Three Fiber
+│  ├─ lib/types.ts                  Room, Placed (a piece of furniture), ScanMeta
+│  ├─ lib/catalog.ts                the furniture catalogue, floors, woods, colours
+│  ├─ lib/sample.ts                 the sample bedroom: one Room + a list of Placed
+│  ├─ lib/store.ts                  Zustand store: design, undo/redo history, selection, scan layer
+│  ├─ lib/api.ts                    client for the reconstruction service
+│  ├─ components/scene/
+│  │  ├─ Viewport.tsx               canvas, lighting, layers
+│  │  ├─ Room.tsx                   walls, floor, windows, skirting generated from Room
+│  │  ├─ Furniture.tsx              one group per Placed: loads the model or built piece, handles drag and selection
+│  │  ├─ Built.tsx                  bed, desk, chair, rug, print generated from dimensions
+│  │  ├─ ScanLayer.tsx              an uploaded scan: unlit, measurable, never editable
+│  │  └─ CameraRig.tsx, Annotations.tsx, materials.ts
+│  ├─ components/studio/            TopBar, ToolBar (+ catalogue), RoomPanel, Inspector, UploadDialog, WalkPad
+│  └─ public/                       models, textures, env, thumbs (all CC0, see ASSETS.md)
+├─ services/reconstruction/         FastAPI + the photo/video pipeline (Python)
+│  └─ app/  main.py  jobs.py  pipeline.py  frames.py  fuse.py  roomfit.py  quality.py
+├─ tests/editor.py, tests/upload.py Playwright scripts that drive the real UI
+└─ .github/workflows/pages.yml      builds and deploys the web app to GitHub Pages on every push to main
 ```
 
-## Data flow today
+## The editable scene
 
-```
-raw RGB-D reconstruction (10.2M triangles, uncoloured)   colour fragments + camera poses
-                    │                                              │
-                    └──────────── prepare_demo_scan.py ────────────┘
-                       decimate → transfer colour → find gravity and wall directions
-                       → remove floating specks → fit floor / wall planes
-                                         │
-                         scan.glb (390k triangles)   room.json (envelope, provenance)
-                                         │
-                        Next.js static files → ScanMesh + store.room
+Everything the user can change is plain data:
+
+```ts
+Room   { width, depth, height, wallColor, floor, origin }
+Placed { id, item, x, z, y, rot, tint, finish }
 ```
 
-## Decisions and their reasons
+- `Room.tsx` generates the shell from `Room`; `Furniture.tsx` renders one object per `Placed`. Walls, floor, windows and
+  every piece of furniture are separate meshes.
+- Every edit goes through `commit()` in the store, which pushes the previous `{room, objects}` onto a history stack. Undo and
+  redo swap whole snapshots (cheap: the data is small). A drag records one step, on release, and none if nothing moved.
+- Catalogue items are either **models** (CC0 GLB files, re-centred on load so the origin is the middle of the footprint at floor
+  level; their size is read from the file) or **built** pieces generated from dimensions, which is what makes wood finish and
+  fabric colour real material changes rather than tints.
+- The same list of plain operations is what an AI assistant (Phase 4) will emit, so its edits will be reviewable and undoable for free.
 
-**The scan is rendered unlit.** Vertex colours already contain the room's real lighting. Adding
-virtual lights on top would look plausible and be wrong. Relighting (Phase 3 "experiment with lighting")
-needs separated albedo, which this scan does not have; see LIMITATIONS.
-
-**Two kinds of scene content.** The scan is one immutable mesh. Things the user adds are data
-(`Volume[]` in the store) rendered by components. Phase 3 widens `Volume` into a general `SceneObject`
-with a catalogue model, materials and price; the store shape is already "list of plain objects plus
-operations" so that undo/redo and AI edits (Phase 4) can both be expressed as the same operation list.
-
-**Every dimension carries a confidence.** `Confidence` is part of the type, and the UI component
-`ConfidenceMark` renders it. A number without a mark should be treated as a bug.
-
-**Room envelope is fitted, not assumed.** The capture frame of the dataset is arbitrary (not gravity
-aligned). The script takes a gravity prior from the handheld camera's average "up", refines it with
-area-weighted surface normals, then finds the wall direction from a histogram of horizontal normals.
-
-**Raycasting uses a BVH** (`three-mesh-bvh`) so that clicking a 390k-triangle mesh stays instant.
-
-**Walk mode does not use pointer lock.** Drag-to-look plus keys / on-screen pad works the same on
-desktop and touch, and never traps the cursor.
-
-**State is client-only for now.** Persistence (Supabase / Postgres, object storage) arrives with
-saved layouts in Phase 3. Nothing is stored or uploaded today.
-
-## Reconstruction pipeline (built)
+## Scans are a separate layer
 
 ```
-photos / video ──► frames.py ──► Depth Anything 3 Base ──► scale ──► fuse.py ──► roomfit.py ──► scan.glb
-                  rotate, resize,   one forward pass:        metric     TSDF on a     gravity, wall      room.json
-                  pick sharp        depth + confidence +     depth      room-sized    direction, floor
-                  video frames      intrinsics + camera      model      voxel grid    and wall planes
-                  (max 16 views)    poses for all views      guess
+photos / video → service → scan.glb + room.json ─┬─► ScanLayer (look, walk, measure, calibrate)
+                                                 └─► "Make a clean room this size": Room.width/depth/height
+                                                      taken from the fitted envelope → furnish from the catalogue,
+                                                      scan shown at 38% opacity as a guide
 ```
 
-Why this design:
+The sample bedroom is never presented as a scan, and a scan is never presented as editable furniture.
 
-- **Feed-forward geometry instead of COLMAP.** People take a handful of photos with little overlap and
-  lots of blank wall, which is where feature matching fails. Depth Anything 3 predicts depth and poses
-  for all views in one pass. The Base model is Apache 2.0 and small enough for a laptop CPU.
-- **A surface, not a splat.** The editor needs something to measure, click and collide with, so views
-  are fused into one mesh. Unobserved space is masked, so nothing is invented where no camera looked.
-- **Scale is never assumed to be right.** Photos alone have no absolute size. A metric depth model
-  (DA3 Metric Large, Apache 2.0) gives a first guess, marked `estimated`. The user fixes it by
-  calibrating one measured line; the factor is stored per scan in the browser and applied to the mesh
-  and every dimension, which then read `measured`.
-- **Privacy.** Everything runs on the user's machine. Uploaded originals and extracted frames are
-  deleted when the job ends; only the mesh and its metadata are kept, and a scan can be deleted from the app.
-- **Jobs are folders** (`data/jobs/<id>/job.json`, `scan.glb`, `room.json`). No database yet; the
-  web app polls `GET /reconstructions/{id}`. A restart marks unfinished jobs as failed.
+## Reconstruction pipeline
 
-Alternatives considered:
+```
+frames.py ──► Depth Anything 3 Base ──► scale ──► fuse.py ──► roomfit.py ──► quality.py
+rotate, resize,   depth + confidence +    metric    NumPy TSDF,   gravity, wall     plain-language
+sharpest video    intrinsics + poses,     depth     marching      direction, floor  capture report
+frames (≤16)      one pass, all views     guess     cubes         and wall planes
+```
 
-| Approach | Gives | Why not (yet) |
+Why this design: people shoot a handful of photos with little overlap and a lot of blank wall, which is where classical
+feature matching (COLMAP) fails; a feed-forward model handles it and runs on a laptop CPU. Views are fused into a surface
+(not a splat) so it can be measured. Scale from photos is only ever a guess, so it is labelled and the user can calibrate.
+Everything runs locally; originals are deleted when a job ends.
+
+### What was wrong with scans, stage by stage (investigated November 2026)
+
+| Stage | Finding | Status |
 |---|---|---|
-| COLMAP (SfM + MVS) | Consistent geometry from dense overlap | Fails on sparse photos and blank walls; dense stage needs CUDA |
-| Larger feed-forward models (DA3 Large / Giant, VGGT, MASt3R) | Better geometry | Non-commercial licences and GPU-sized memory; swappable through `RECONSTRUCT_GEOMETRY_MODEL` |
-| Gaussian splatting | Best-looking views | Not a surface: hard to measure or edit |
-| Phone depth sensors (ARKit / RoomPlan) | True metric scale, wall and door primitives | Needs a native iOS capture app |
+| Old demo room | Not produced by this pipeline: a dataset scan shot in dim light, reduced 26x, coloured per vertex. Could not reach design quality | Replaced by a designed room |
+| Frame selection | Sharpest frame per time window; blur and darkness were never reported | Now measured per frame and reported |
+| Camera poses | Predicted by the model with no cross-check. Photos and video of the same room gave room lengths within 6% of each other; no ground truth available | Unchanged |
+| Depth | Predicted at 504 px regardless of view count | 644 px for up to 10 views on CPU |
+| Scale | Raising depth resolution exposed a size mismatch with the metric pass that silently dropped views, leaving a one-view estimate about 27% off | Fixed: metric depth is rescaled to match |
+| Surface | 2 cm voxels, 400k triangle cap | 1.2 to 1.4 cm voxels for a bedroom, 600k cap |
+| Colour | One colour per vertex, averaged in the voxel grid: soft, "muddy" | Sharper from finer voxels; real texture mapping not built |
+| Missing surfaces | Only what a camera saw exists. In the test set the camera moved 0.7 m in total, the main cause of holes | Inherent; now explained to the user |
+| Editability | A fused surface has no separate objects | Addressed by the hybrid below, not by the scan |
 
-Still to build in Phase 5: wall, door and window primitives, furniture segmentation, more than 16
-views (chunked inference), and a GPU worker for hosted use.
+### Hybrid approach
+
+Built: the scan's fitted envelope sizes a clean procedural room, which the user furnishes from the catalogue with the scan as a guide.
+
+Not built (proposed): detect furniture, doors and windows automatically. Run an open-vocabulary detector and segmenter on the
+selected frames, lift each mask to a 3D box using the depth and poses already computed, merge boxes across views, then place the
+nearest catalogue item by class and size for the user to confirm. Replace the bounding-box room with a wall-by-wall layout
+(plane fitting under a right-angle assumption) so non-rectangular rooms work.
+
+Alternatives considered for geometry: COLMAP (fails on sparse photos; dense stage needs CUDA), larger feed-forward models
+(better, but non-commercial licences and GPU memory; swappable through `RECONSTRUCT_GEOMETRY_MODEL`), Gaussian splatting
+(prettier, not measurable), phone depth sensors (true scale, needs a native capture app).

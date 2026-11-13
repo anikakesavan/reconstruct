@@ -1,130 +1,203 @@
 import { create } from "zustand";
-import type { Probe, RoomMeta, ScanRef, Tool, Vec3, ViewMode, Volume } from "./types";
-import { DEMO_SCAN } from "./api";
+import { ITEM, sizes } from "./catalog";
+import { SAMPLE_OBJECTS, SAMPLE_ROOM } from "./sample";
+import type { Placed, Room, ScanMeta, ScanRef, Tool, Vec3, ViewMode } from "./types";
 
-export const VOLUME_PRESETS: { label: string; size: Vec3 }[] = [
-  { label: "Double bed", size: [1.4, 0.5, 2.0] },
-  { label: "Desk", size: [1.2, 0.75, 0.6] },
-  { label: "Wardrobe", size: [1.0, 2.0, 0.6] },
-  { label: "Bookshelf", size: [0.8, 1.8, 0.3] },
-];
+const SAVE_KEY = "reconstruct:design:v2";
+const SNAP = 0.05;
+export const ROT_STEP = Math.PI / 12; // 15 degrees
 
-interface Studio {
-  scan: ScanRef;
-  /** Room details as delivered with the scan, before any user calibration. */
-  baseRoom: RoomMeta | null;
-  /** Multiplier the user set by calibrating against a real measurement. 1 means untouched. */
-  calibration: number;
-  /** Room details with calibration applied. This is what the interface shows. */
-  room: RoomMeta | null;
-  openScan: (scan: ScanRef) => void;
-  calibrate: (factor: number) => void;
-  scanReady: boolean;
-  tool: Tool;
-  view: ViewMode;
-  volumes: Volume[];
+/** Everything undo/redo covers. */
+interface Design { room: Room; objects: Placed[] }
+
+interface Studio extends Design {
+  past: Design[]; future: Design[];
   selectedId: string | null;
-  measure: { a: Vec3 | null; b: Vec3 | null };
-  probe: Probe | null;
-  fps: number;
-  triangles: number;
+  tool: Tool; view: ViewMode;
   dragging: boolean;
-  /** Display-only multiplier on the captured colours. 1 is exactly as captured. */
-  gain: number;
-  setGain: (g: number) => void;
-  setRoom: (r: RoomMeta) => void;
-  setScanReady: () => void;
-  setTool: (t: Tool) => void;
-  setView: (v: ViewMode) => void;
-  addVolume: (preset: number) => void;
-  updateVolume: (id: string, patch: Partial<Volume>) => void;
-  removeVolume: (id: string) => void;
+  measure: { a: Vec3 | null; b: Vec3 | null };
+  assetsReady: boolean;
+
+  // an uploaded scan, shown as a reference layer
+  scan: ScanRef | null;
+  scanMeta: ScanMeta | null;
+  calibration: number;
+  showScan: boolean;
+  /** false while looking at a raw scan before a clean room has been made from it */
+  showRoom: boolean;
+
+  hydrate: () => void;
+  commit: (next: Partial<Design>) => void;
+  undo: () => void; redo: () => void;
   select: (id: string | null) => void;
-  addMeasurePoint: (p: Vec3) => void;
-  clearMeasure: () => void;
-  setProbe: (p: Probe | null) => void;
-  setStats: (fps: number, triangles: number) => void;
-  setDragging: (d: boolean) => void;
-}
-
-/** Half extents of a volume's footprint after its quarter-turn rotation. */
-export function footprint(v: Pick<Volume, "size" | "quarterTurns">): [number, number] {
-  const turned = v.quarterTurns % 2 !== 0;
-  return turned ? [v.size[2] / 2, v.size[0] / 2] : [v.size[0] / 2, v.size[2] / 2];
-}
-
-/** Keep a volume inside the ESTIMATED wall planes. Approximate by construction. */
-export function clampToRoom(v: Volume, room: RoomMeta | null): Volume {
-  if (!room) return v;
-  const [hx, hz] = footprint(v);
-  const w = room.envelope.walls;
-  const cl = (n: number, lo: number, hi: number) => (lo > hi ? (lo + hi) / 2 : Math.min(hi, Math.max(lo, n)));
-  return { ...v, x: cl(v.x, w.x_min + hx, w.x_max - hx), z: cl(v.z, w.z_min + hz, w.z_max - hz) };
-}
-
-/** Apply a user calibration to every length in the room details. */
-export function scaleRoom(r: RoomMeta, k: number): RoomMeta {
-  if (k === 1) return r;
-  const w = r.envelope.walls;
-  return {
-    ...r,
-    scale: { ...r.scale, confidence: "measured", method: "Calibrated by you against a real measurement", metres_per_unit: r.scale.metres_per_unit * k },
-    envelope: {
-      ...r.envelope, width_m: r.envelope.width_m * k, depth_m: r.envelope.depth_m * k,
-      ceiling: { ...r.envelope.ceiling, max_y: r.envelope.ceiling.max_y * k },
-      walls: { x_min: w.x_min * k, x_max: w.x_max * k, z_min: w.z_min * k, z_max: w.z_max * k },
-      stated_floor_area_m2: undefined,
-    },
-    bounds: { min: r.bounds.min.map((n) => n * k) as Vec3, max: r.bounds.max.map((n) => n * k) as Vec3 },
-  };
+  add: (item: string) => void;
+  /** live update while dragging: no history entry until endDrag */
+  nudge: (id: string, x: number, z: number) => void;
+  beginDrag: () => void; endDrag: () => void;
+  patch: (id: string, patch: Partial<Placed>) => void;
+  remove: (id: string) => void;
+  duplicate: (id: string) => void;
+  replace: (id: string, item: string) => void;
+  setRoom: (patch: Partial<Room>) => void;
+  resetToSample: () => void;
+  setTool: (t: Tool) => void; setView: (v: ViewMode) => void;
+  addMeasurePoint: (p: Vec3) => void; clearMeasure: () => void;
+  setAssetsReady: () => void;
+  openScan: (scan: ScanRef) => void;
+  setScanMeta: (m: ScanMeta) => void;
+  closeScan: () => void;
+  calibrate: (factor: number) => void;
+  setLayer: (layer: "showScan" | "showRoom", on: boolean) => void;
+  roomFromScan: () => void;
 }
 
 let counter = 0;
+const newId = () => `o${Date.now().toString(36)}${(counter++).toString(36)}`;
+const snap = (n: number) => Math.round(n / SNAP) * SNAP;
+
+/** Half extents of an item's footprint on the floor after rotation (axis-aligned bound). */
+export function halfFootprint(o: Pick<Placed, "item" | "rot">): [number, number] {
+  const s = sizes.get(o.item) ?? [0.5, 0.5, 0.5];
+  const c = Math.abs(Math.cos(o.rot)), sn = Math.abs(Math.sin(o.rot));
+  return [(s[0] * c + s[2] * sn) / 2, (s[0] * sn + s[2] * c) / 2];
+}
+
+/** Keep an item inside the walls. */
+export function clampToRoom(o: Placed, room: Room): Placed {
+  const [hx, hz] = halfFootprint(o);
+  const cl = (n: number, half: number, h: number) => (h > half ? (0) : Math.min(half - h, Math.max(-half + h, n)));
+  return { ...o, x: cl(o.x, room.width / 2, hx), z: cl(o.z, room.depth / 2, hz) };
+}
+
+function save(d: Design) {
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify({ room: d.room, objects: d.objects })); } catch { /* storage unavailable */ }
+}
 
 export const useStudio = create<Studio>((set, get) => ({
-  room: null, scanReady: false, tool: "select", view: "orbit", volumes: [], selectedId: null,
-  measure: { a: null, b: null }, probe: null, fps: 0, triangles: 0, dragging: false, gain: 1.5,
-  setGain: (gain) => set({ gain }),
-  scan: DEMO_SCAN, baseRoom: null, calibration: 1,
+  room: SAMPLE_ROOM, objects: SAMPLE_OBJECTS, past: [], future: [],
+  selectedId: null, tool: "select", view: "orbit", dragging: false,
+  measure: { a: null, b: null }, assetsReady: false,
+  scan: null, scanMeta: null, calibration: 1, showScan: true, showRoom: true,
+
+  hydrate: () => {
+    try {
+      const raw = localStorage.getItem(SAVE_KEY);
+      if (!raw) return;
+      const d = JSON.parse(raw) as Design;
+      if (d?.room?.width && Array.isArray(d.objects)) set({ room: d.room, objects: d.objects.filter((o) => ITEM[o.item]) });
+    } catch { /* ignore a corrupt save */ }
+  },
+
+  commit: (next) => {
+    const { room, objects, past } = get();
+    const d = { room: next.room ?? room, objects: next.objects ?? objects };
+    set({ ...d, past: [...past.slice(-79), { room, objects }], future: [] });
+    save(d);
+  },
+  undo: () => {
+    const { past, future, room, objects, selectedId } = get();
+    const prev = past[past.length - 1];
+    if (!prev) return;
+    set({ ...prev, past: past.slice(0, -1), future: [{ room, objects }, ...future],
+          selectedId: prev.objects.some((o) => o.id === selectedId) ? selectedId : null });
+    save(prev);
+  },
+  redo: () => {
+    const { past, future, room, objects } = get();
+    const next = future[0];
+    if (!next) return;
+    set({ ...next, past: [...past, { room, objects }], future: future.slice(1) });
+    save(next);
+  },
+
+  select: (selectedId) => set({ selectedId }),
+  add: (item) => {
+    const def = ITEM[item]; if (!def) return;
+    const { room, objects } = get();
+    const o = clampToRoom({ id: newId(), item, x: 0, z: 0, y: def.tabletop ? 0.74 : def.wall ? 1.4 : 0, rot: 0, tint: null,
+                            finish: def.wood ? "oak_veneer_01" : null }, room);
+    get().commit({ objects: [...objects, o] });
+    set({ selectedId: o.id, tool: "select" });
+  },
+  beginDrag: () => { const { room, objects, past } = get(); set({ dragging: true, past: [...past.slice(-79), { room, objects }], future: [] }); },
+  nudge: (id, x, z) => {
+    const { room, objects } = get();
+    set({ objects: objects.map((o) => (o.id === id ? clampToRoom({ ...o, x: snap(x), z: snap(z) }, room) : o)) });
+  },
+  endDrag: () => {
+    const { room, objects, past } = get();
+    const before = past[past.length - 1];
+    // a click without movement should not leave an empty undo step
+    const moved = before && JSON.stringify(before.objects) !== JSON.stringify(objects);
+    set({ dragging: false, past: moved ? past : past.slice(0, -1) });
+    if (moved) save({ room, objects });
+  },
+  patch: (id, patch) => {
+    const { room, objects } = get();
+    get().commit({ objects: objects.map((o) => (o.id === id ? clampToRoom({ ...o, ...patch }, room) : o)) });
+  },
+  remove: (id) => { get().commit({ objects: get().objects.filter((o) => o.id !== id) }); set({ selectedId: null }); },
+  duplicate: (id) => {
+    const { room, objects } = get();
+    const src = objects.find((o) => o.id === id); if (!src) return;
+    const copy = clampToRoom({ ...src, id: newId(), x: src.x + 0.4, z: src.z + 0.4 }, room);
+    get().commit({ objects: [...objects, copy] });
+    set({ selectedId: copy.id });
+  },
+  replace: (id, item) => {
+    const { room, objects } = get();
+    const def = ITEM[item]; if (!def) return;
+    get().commit({ objects: objects.map((o) => (o.id === id
+      ? clampToRoom({ ...o, item, tint: null, finish: def.wood ? o.finish ?? "oak_veneer_01" : null }, room) : o)) });
+  },
+  setRoom: (patch) => {
+    const room = { ...get().room, ...patch };
+    get().commit({ room, objects: get().objects.map((o) => clampToRoom(o, room)) });
+  },
+  resetToSample: () => { get().commit({ room: SAMPLE_ROOM, objects: SAMPLE_OBJECTS }); set({ selectedId: null, showRoom: true }); },
+
+  setTool: (tool) => set({ tool, measure: { a: null, b: null } }),
+  setView: (view) => set({ view }),
+  addMeasurePoint: (p) => { const { a, b } = get().measure; set({ measure: !a || b ? { a: p, b: null } : { a, b: p } }); },
+  clearMeasure: () => set({ measure: { a: null, b: null } }),
+  setAssetsReady: () => set({ assetsReady: true }),
+
   openScan: (scan) => {
-    if (scan.id === get().scan.id) return;
-    set({ scan, baseRoom: null, room: null, calibration: 1, scanReady: false, volumes: [], selectedId: null,
-          measure: { a: null, b: null }, probe: null, tool: "select", view: "orbit", gain: scan.kind === "dataset" ? 1.5 : 1 });
-  },
-  setRoom: (baseRoom) => {
     let k = 1;
-    try { k = Number(localStorage.getItem(`reconstruct:calibration:${get().scan.id}`)) || 1; } catch { /* storage unavailable */ }
-    set({ baseRoom, calibration: k, room: scaleRoom(baseRoom, k) });
+    try { k = Number(localStorage.getItem(`reconstruct:calibration:${scan.id}`)) || 1; } catch { /* storage unavailable */ }
+    set({ scan, scanMeta: null, calibration: k, showScan: true, showRoom: false, selectedId: null, view: "orbit", tool: "select",
+          measure: { a: null, b: null } });
   },
+  setScanMeta: (scanMeta) => set({ scanMeta }),
+  closeScan: () => set({ scan: null, scanMeta: null, calibration: 1, showRoom: true, measure: { a: null, b: null } }),
   calibrate: (factor) => {
-    const { baseRoom, calibration, scan } = get();
-    if (!baseRoom || !(factor > 0)) return;
+    const { calibration, scan } = get();
+    if (!scan || !(factor > 0)) return;
     const k = calibration * factor;
     try { localStorage.setItem(`reconstruct:calibration:${scan.id}`, String(k)); } catch { /* storage unavailable */ }
-    set({ calibration: k, room: scaleRoom(baseRoom, k), measure: { a: null, b: null }, probe: null, volumes: [], selectedId: null });
+    set({ calibration: k, measure: { a: null, b: null } });
   },
-  setScanReady: () => set({ scanReady: true }),
-  setTool: (tool) => set({ tool, probe: tool === "inspect" ? get().probe : null }),
-  setView: (view) => set({ view }),
-  addVolume: (preset) => {
-    const p = VOLUME_PRESETS[preset];
-    const id = `v${++counter}`;
-    const v = clampToRoom({ id, label: p.label, size: [...p.size] as Vec3, x: 0, z: 0, quarterTurns: 0 }, get().room);
-    set({ volumes: [...get().volumes, v], selectedId: id, tool: "select" });
+  setLayer: (layer, on) => set({ [layer]: on } as Pick<Studio, "showScan" | "showRoom">),
+  roomFromScan: () => {
+    const { scanMeta, calibration, room } = get();
+    if (!scanMeta) return;
+    const r2 = (n: number) => Math.round(n * 20) / 20;
+    const e = scanMeta.envelope;
+    get().commit({
+      room: { ...room, origin: "scan", width: r2(Math.max(1.8, e.width_m * calibration)), depth: r2(Math.max(1.8, e.depth_m * calibration)),
+              height: r2(Math.min(3.6, Math.max(2.2, e.ceiling.max_y * calibration))) },
+      objects: [],
+    });
+    set({ showRoom: true, selectedId: null });
   },
-  updateVolume: (id, patch) =>
-    set({ volumes: get().volumes.map((v) => (v.id === id ? clampToRoom({ ...v, ...patch }, get().room) : v)) }),
-  removeVolume: (id) => set({ volumes: get().volumes.filter((v) => v.id !== id), selectedId: null }),
-  select: (selectedId) => set({ selectedId }),
-  addMeasurePoint: (p) => {
-    const { a, b } = get().measure;
-    set({ measure: !a || b ? { a: p, b: null } : { a, b: p } });
-  },
-  clearMeasure: () => set({ measure: { a: null, b: null } }),
-  setProbe: (probe) => set({ probe }),
-  setStats: (fps, triangles) => set({ fps, triangles }),
-  setDragging: (dragging) => set({ dragging }),
 }));
+
+/** Scan envelope with the user's calibration applied. */
+export function scaledEnvelope(meta: ScanMeta, k: number) {
+  return { width: meta.envelope.width_m * k, depth: meta.envelope.depth_m * k, height: meta.envelope.ceiling.max_y * k };
+}
+
+if (typeof window !== "undefined") (window as unknown as { __studio: typeof useStudio }).__studio = useStudio; // read by tests/editor.py
 
 /** Shared, non-reactive input for walk mode so keys and the touch pad drive the same controller. */
 export const walkInput = { forward: 0, strafe: 0 };

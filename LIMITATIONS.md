@@ -1,90 +1,60 @@
 # Limitations
 
-Honest state after the first slice of Phase 5.
+Honest state after the editor rebuild (12 Nov 2026).
 
 ## Not built
-- Detection of walls, doors, windows or furniture as separate objects. Every scan is one mesh, so
-  scanned furniture cannot be selected, moved or removed.
-- Furniture catalogue, materials, wall and floor recolouring, lighting controls.
-- Undo / redo, saved layouts, duplicate, design comparison.
-- AI assistant, style presets, moodboards, budget, before / after, Design Battle, accounts.
-- Hosting. The reconstruction service runs on your own computer; there is no cloud version.
+- AI assistant, style presets, moodboards, budget and shopping list, before / after, Design Battle, accounts, cloud saving.
+- Automatic recognition of furniture, doors or windows in a scan.
+- Hosted scanning: the reconstruction service runs only on your own computer, so "Scan your room" on the live site reports
+  the service as not running unless you start it locally.
 
-## Uploading a room
-Supported input: photos (`.jpg .jpeg .png .webp .heic .heif .bmp`) and videos
-(`.mp4 .mov .m4v .webm .avi .mkv`), up to 80 files and 600 MB per scan. At least two photos or one video.
+## Editor
+- **No collisions.** Pieces can overlap each other. They stop at walls using a rotated bounding box, so a turned piece stops slightly early.
+- **Things on tables do not follow the table.** A lamp keeps its own position and height if you move the desk under it.
+- **Height is typed, not dragged.** New tabletop pieces start at 0.74 m and wall pieces at 1.4 m, in the middle of the room; you move them into place.
+- **Recolouring models is a tint** multiplied over their own textures, so dark leather stays dark. Built pieces (beds, desk, chair, rug, print) change fabric colour and wood properly.
+- Turning is in 15 degree steps. No resizing of pieces. No multi-select.
+- Rooms are rectangles with two windows on one wall. No doors, no window editing.
+- The catalogue is small (25 pieces), with no wardrobe, sofa or curtains. There are no prices.
+- One design per browser; clearing site data loses it.
+- Lighting is fixed daylight. Bounced light is approximated, not simulated; lamps do not emit light.
+- The view through the windows is a plain bright panel.
 
-What to expect:
-- **At most 16 views are used.** Extra photos are thinned evenly; a video is cut into 16 windows and
-  the sharpest sampled frame of each is kept. Long walkthroughs of several rooms will not work well.
-- **Quality is "rough model", not "photo".** Depth is predicted at about 504 px per view and fused
-  into 2 cm voxels with one colour per vertex. Edges are soft, thin objects vanish, mirrors, windows
-  and glossy surfaces come out wrong.
-- **Holes are normal.** Only surfaces a camera saw are built. Eight photos typically give separate
-  patches of wall and furniture rather than a closed room. From outside, walls are see-through by
-  design (you look in through their backs).
-- **Size is a guess until you calibrate.** The automatic scale comes from a learned depth model. In
-  the two test scans its per-view estimates disagreed by 12% and 13%; on a tabletop scene, 30%.
-  Calibrating against one taped measurement fixes overall size but not local distortion.
-- **Depth and camera positions are predictions, not measurements.** Nothing checks them against
-  ground truth. Straight walls can come out slightly bent and separate patches can be misplaced
-  relative to each other, more so when photos barely overlap.
-- **Floor and walls are fitted, sometimes not found.** If the floor is not in frame, heights are
-  measured from the lowest captured point. Walls that were not seen fall back to the edge of the data.
-  The room details panel says when either happened.
-- Gravity is taken from how the camera was held. Photos shot at odd angles can tilt the room.
-- One scan is processed at a time. Calibration is stored in the browser, not with the scan.
+## Scanning
+Supported input: photos (`.jpg .jpeg .png .webp .heic .heif .bmp`) and videos (`.mp4 .mov .m4v .webm .avi .mkv`), up to 80
+files and 600 MB. At least two photos or one video.
 
-Measured on the development machine (2 CPU cores, no graphics card), models already loaded:
-8 views took 42 to 45 s, 16 views took 52 s. The first scan also downloads about 1.8 GB of weights.
-GPU speed is untested.
-
-## The demo scan
-- Real capture: Redwood Indoor Lidar-RGBD "Bedroom", public domain. Captured in dim light, so it is
-  dark; the brightness slider is display-only.
-- Reduced from 10.2M to 450k triangles, then floating fragments smaller than 0.5% of faces were removed
-  (about 60k triangles), leaving about 390k. Fine detail and thin objects are lost or ragged, which is
-  very visible in Walk view.
-- Colour was transferred from the dataset's coloured fragments by nearest neighbour
-  (median distance 0.9 cm, 95th percentile 3.3 cm). Colours are per vertex, not textures.
-- Holes exist wherever the sensor did not see (under furniture, behind objects, windows).
-
-## Dimensions
-- Scale comes from the depth sensor, so the scan is in metres. Sensor and reconstruction error of a few
-  centimetres should be assumed; nothing was checked against a tape measure.
-- Wall positions, room side lengths and ceiling height are **estimated** by plane fitting on the mesh.
-  The ceiling in this room is sloped; the app reports only its highest point.
-- The fitted bounding footprint (5.59 x 4.69 m) is larger than the dataset's stated floor area
-  (21.0 m²) because the room is not a plain rectangle. Both numbers are shown for that reason.
-- Measure and Inspect read the decimated surface. Inspect's "floor / wall" label is a guess from the
-  surface direction only.
-
-## Editing
-- Block-out boxes stop at the estimated wall planes, not at the real walls, and do not collide with
-  scanned furniture or with each other.
-- Rotation is in 90 degree steps. Boxes sit on the floor plane only.
-- Nothing persists. Reloading the page clears all edits.
-- Walk view keeps you inside the estimated walls but walks through furniture.
+- **A scan is a rough fused surface**, not clean geometry: soft edges, one colour per vertex, holes wherever no camera looked,
+  wrong results on mirrors, windows and glossy surfaces. It will not look like the sample room.
+- **At most 16 views are used.** Extra photos are thinned; video is sampled.
+- **Size is a model's guess** until you calibrate. In tests its per-view estimates disagreed by 11 to 13% on a bedroom and 30% on a tabletop scene.
+- **Depth and camera positions are predictions** and are not verified against anything.
+- The clean room made from a scan is the scan's bounding rectangle, clamped to 2.2 to 3.6 m high. Alcoves and angled walls are lost.
+- The capture-quality thresholds (blur, darkness, camera travel) are sensible starting values, not tuned on labelled data.
+- Calibration is stored in the browser, per scan.
 
 ## Test record (12 Nov 2026)
-Automated, headless Chrome against the production build and the live service.
+Headless Chrome, static build served under `/reconstruct/` exactly as on GitHub Pages.
 
-`tests/upload.py` (the real upload flow, driven through the UI):
-- 8 phone photos of a bedroom with almost no overlap: built in 100 s including model load; opened
-  automatically; room details showed 5.35 x 3.59 m marked estimated.
-- An 8-frame video of the same room: built; 5.06 x 3.54 m, consistent with the photo run.
-- Measure then "Set scale" rescaled the room and switched scale to measured, at 1440 x 900 (mouse)
-  and 390 x 844 (touch emulation). No console errors.
-- A non-media file was rejected with a clear 415 message. 25 photos were thinned to 16 and built.
-- Found and fixed during testing: on phones the room details panel covered the view switch.
+`tests/editor.py`, at 1440 x 900 with a mouse and 390 x 844 with touch:
+- Select a bed by clicking / tapping it; inspector opens with the right piece.
+- Mouse drag moved it by the expected amount as one undo step; dragging past the wall stopped it at the wall (desktop only).
+- Turn, fabric colour, wood finish, swap for another bed, duplicate, remove, add a plant from the catalogue: all changed the scene data as expected.
+- Undo walked every step back to the exact sample layout; redo was available.
+- Wall colour and floor changed and survived a page reload.
+- Measuring two points 2.00 m apart on the floor read 2.00 m (2.01 m by touch).
+- No console errors and no failed asset requests.
 
-`tests/smoke.py` (sample scan: views, measure, inspect, block-out box, walk) still passes at both sizes.
+`tests/upload.py`, desktop, against the live service with 8 real bedroom photos:
+- Built in 67 s; the scan opened; furniture was hidden and "Add furniture" disabled while only the raw scan was shown.
+- Quality report correctly said the camera had barely moved (0.69 m of travel).
+- Calibrating a measured line rescaled the scan. "Make a clean room this size" produced a 5.75 x 3.40 m room; a bed was added into it.
+
+Screenshots were reviewed by eye at both sizes.
 
 Not tested:
-- A real phone video of normal length, HEIC photos from an iPhone, portrait-orientation video.
-- Accuracy against a tape measure. No ground truth was available for the test room.
-- Any physical phone or tablet; Safari and Firefox; screen readers.
-- A graphics card, for either reconstruction or rendering. Rendering frame rate is still unmeasured:
-  the test machine's software renderer drew scans at 2 to 4 fps, which says nothing about real devices.
-- Running `scripts/setup.sh` on a clean machine (the development machine was set up by hand with the
-  same packages and the same pinned model commit).
+- Touch dragging of furniture (tap-select and every button were tested; the drag gesture was not).
+- The scan flow on a phone-sized screen in this version, and a video upload in this version (video worked in the previous one).
+- A real phone or tablet, Safari, Firefox, screen readers.
+- Frame rate. The test machine has no graphics card. The previous version ran at 60 fps on the owner's laptop with a heavier scene; this one has not been measured.
+- The pipeline on a graphics card; `setup.sh` on a clean machine; accuracy against a tape measure.
