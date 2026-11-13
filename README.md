@@ -29,6 +29,74 @@ Turn photos of a bedroom into an editable 3D room, then redesign it: move, swap,
 **Be clear about the limits.** The reconstruction is a recognisable layout built from lookalike pieces, not a copy of your furniture.
 Sizes are estimates, some things are missed or mislabelled, and clutter is ignored. `LIMITATIONS.md` has specifics and the test record.
 
+## Architecture
+
+The browser studio handles room editing and sends photo or video scans to the reconstruction service.
+
+```mermaid
+flowchart TD
+  user["Room designer"]
+  subgraph group_web["Browser studio"]
+    studio["Studio shell (Studio.tsx)"]
+    upload["Scan upload (UploadDialog.tsx)"]
+    api["Service API client (api.ts)"]
+  end
+  subgraph group_editing["Design and rendering"]
+    state["Design state (store.ts)"]
+    placement["Placement rules (placement.ts)"]
+    catalog["Furniture catalog (catalog.ts)"]
+    inspector["Furniture inspector (Inspector.tsx)"]
+    roompanel["Room controls (RoomPanel.tsx)"]
+    viewport["3D viewport (Viewport.tsx)"]
+    room["Room shell (Room.tsx)"]
+    furniture["Furniture models (Furniture.tsx)"]
+    recolor["Material recoloring (recolor.ts)"]
+    types["Room and scan data (types.ts)"]
+  end
+  subgraph group_service["Reconstruction service"]
+    service["HTTP service (main.py)"]
+    jobs["Scan jobs (jobs.py)"]
+  end
+  subgraph group_vision["Scan processing"]
+    frames["Frame preparation (frames.py)"]
+    pipeline["Reconstruction pipeline (pipeline.py)"]
+    fusion["Geometry fusion (fuse.py)"]
+  end
+  subgraph group_domain["Room and furniture analysis"]
+    roomfit["Room fitting (roomfit.py)"]
+    objects["Object detection (objects.py)"]
+    quality["Scan quality (quality.py)"]
+  end
+  user -->|edits room| studio
+  studio -->|opens| upload
+  studio -->|renders| inspector
+  studio -->|renders| roompanel
+  studio -.->|renders| viewport
+  upload -->|calls| api
+  upload -->|opens scan| state
+  api -.->|HTTP requests| service
+  service -->|queues and reads| jobs
+  jobs -->|runs| pipeline
+  service -->|reports health| pipeline
+  pipeline -->|prepares views| frames
+  pipeline -->|fuses views| fusion
+  pipeline -->|fits room| roomfit
+  pipeline -->|detects objects| objects
+  pipeline -->|assesses quality| quality
+  state -->|checks placement| placement
+  state -->|uses definitions| catalog
+  inspector -.->|edits design| state
+  roompanel -->|edits room| state
+  viewport -->|renders| room
+  viewport -->|renders| furniture
+  furniture -->|loads models| catalog
+  furniture -->|recolors materials| recolor
+  furniture -->|reads selection| state
+  state -->|stores typed data| types
+```
+
+[Open the interactive diagram on GitDiagram](https://gitdiagram.com/anikakesavan/reconstruct)
+
 ## Run it
 
 ```bash
